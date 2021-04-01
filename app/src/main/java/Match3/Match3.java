@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
+import static Match3.Settings.*;
+
 
 /////////////////////////////////////////
 // class Match3 implements ActionListener
@@ -61,7 +63,7 @@ class Match3 implements ActionListener
 
         for(int i=0;i<numrows;i++) {
             for(int j=0;j<numcols;j++) {
-                boardButtons[i][j] = new JButton(Board.CELL_LABELS[Board.CELL_EMPTY]);
+                boardButtons[i][j] = new JButton(CELL_LABELS[CELL_EMPTY]);
                 boardButtons[i][j].setFont(new Font("Monospaced",Font.PLAIN,20));
                 boardButtons[i][j].setActionCommand(
                     String.valueOf(i) + " " + String.valueOf(j));
@@ -194,7 +196,7 @@ class Match3 implements ActionListener
         for(int i=0; i<numrows; i++) {
             for(int j=0; j<numcols; j++) {
                 boardButtons[i][j].setText(
-                   Board.CELL_LABELS[ gameboard.getValueAt(i,j) ]);
+                   CELL_LABELS[ gameboard.getValueAt(i,j) ]);
             }
         }
     }

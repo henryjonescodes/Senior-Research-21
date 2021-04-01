@@ -32,4 +32,13 @@ public class Agent {
     }
     return pairs;
   }
+
+  // public Vector<TilePair> getAllCascades(Board gameBoard){
+  //   Vector swaps = getValidSwaps(gameBoard);
+  //   for(TilePair tp : swaps){
+  //     //Make the swap
+  //     //Refil the board
+  //     //Check for matches
+  //   }
+  // }
 }

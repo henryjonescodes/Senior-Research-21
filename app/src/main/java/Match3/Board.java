@@ -1,21 +1,13 @@
 package Match3;
 
 import java.util.*;
+import static Match3.Settings.*;
 
 // class Board
 // underlying game engine for Match3
 class Board
 {
-    static final int CELL_EMPTY = 0;   // empty cell
-    static final int CELL_X = 1;       // X
-    static final int CELL_STAR = 2;    // *
-    static final int CELL_O = 3;       // O
-    static final int CELL_DIAMOND = 4; // <>
-    static final int CELL_BOX = 5;     // []
-    static final String[] CELL_LABELS = {" ","X","*","O","<>","[]"};
-    static final int CELL_MIN = CELL_X;
-    static final int CELL_MAX = CELL_BOX;
-    final boolean verbose = true;
+    final boolean verbose = false;
     int numrows,numcols;
     int[][] board;
 
