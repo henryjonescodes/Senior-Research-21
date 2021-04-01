@@ -10,12 +10,14 @@ class Board
     final boolean verbose = false;
     int numrows,numcols;
     int[][] board;
+    FutureBoard future;
 
     // create an empty board
     Board(int numrows, int numcols)
     {
         this.numrows = numrows;
         this.numcols = numcols;
+        future = new FutureBoard(numrows,numcols);
         board = new int[numrows][numcols];
         for(int i=0;i < numrows; i++) {
             for(int j=0;j < numcols; j++) {
@@ -28,12 +30,18 @@ class Board
     Board(Board oldboard) {
         numrows = oldboard.getNumRows();
         numcols = oldboard.getNumCols();
+        future = oldboard.getFutureBoard();
         board = new int[numrows][numcols];
         for(int i=0;i < numrows; i++) {
             for(int j=0;j < numcols; j++) {
                 board[i][j] = oldboard.board[i][j];
             }
         }
+    }
+
+
+    public FutureBoard getFutureBoard(){
+      return future;
     }
 
     public int getNumRows() {
@@ -229,5 +237,21 @@ class Board
             dropPieces();
             eliminateMatches();
         } while(existsEmptyCell());
+    }
+
+    public String toString(){
+      StringBuilder SB = new StringBuilder();
+      SB.append("========Board Start =========\n");
+      for(int i=0;i < numrows; i++) {
+          for(int j=0;j < numcols; j++) {
+            SB.append(CELL_LABELS[board[i][j]]);
+            if(j < numcols - 1){
+              SB.append(" | ");
+            }
+          }
+          SB.append("\n");
+      }
+      SB.append("========Board End =========\n");
+      return SB.toString();
     }
 }
