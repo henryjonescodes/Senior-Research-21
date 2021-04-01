@@ -69,11 +69,16 @@ class Board
     public void dropPieces() {
         // work column by column
         for(int j=0; j<numcols; j++) {
+
+            // Make temporary storage for moved pieces
+            // and fill it with empty values
             int[] thiscol = new int[numrows];
             for(int i=0;i<numrows;i++) {
                 thiscol[i] = CELL_EMPTY;
             }
 
+            // Starting at the top of each collumn, store eveything
+            // but the empty cells in new order
             int target_index = numrows - 1;
             for(int i=numrows-1; i>=0; i--) {
                 if(board[i][j] != CELL_EMPTY) {
@@ -82,11 +87,14 @@ class Board
                 }
             }
 
+            // If target_index hasn't fully traversed the collumn,
+            // add new randomized pieces at the top
             while(target_index >= 0) {
                 thiscol[target_index] = new Random().nextInt(CELL_MAX)+1;
                 target_index--;
             }
 
+            // Transfer data to the board's data structure
             for(int i=0;i<numrows;i++) {
                 board[i][j] = thiscol[i];
             }
@@ -164,6 +172,20 @@ class Board
         } else {
             return false;
         }
+    }
+
+    // public boolean isValidSwap(int row1,int col1,int row2,int col2) {
+
+
+
+
+    public boolean locationOutOfBounds(int row, int col){
+      if(row < 0 || row >= getNumRows()){
+        return true;
+      } else if (col < 0 || col >= getNumCols()) {
+        return true;
+      }
+      return false;
     }
 
 
