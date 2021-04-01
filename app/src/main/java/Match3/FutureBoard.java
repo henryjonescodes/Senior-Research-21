@@ -71,12 +71,13 @@ class FutureBoard
       int toReturn = board[numrows-1][fromColumn];
       board[numrows-1][fromColumn]  = CELL_EMPTY;
       dropPieces();
-      fillRandomRows();
+      // fillRandomRows();
       return toReturn;
     }
 
     public void fillRandomRows(){
-        Board tempBoard = new Board(numRandomRows,numcols);
+        FutureBoard tempBoard = new FutureBoard(numRandomRows,numcols);
+        tempBoard.dropPieces();
         for(int i=0;i < numRandomRows; i++) {
             for(int j=0;j < numcols; j++) {
                 board[i][j] = tempBoard.board[i][j];
@@ -118,7 +119,10 @@ class FutureBoard
             for(int i=0;i<numrows;i++) {
                 board[i][j] = thiscol[i];
             }
+
+            // Fill top with random piececs
         }
+        // fillRandomRows();
     }
 
     public boolean locationOutOfBounds(int row, int col){

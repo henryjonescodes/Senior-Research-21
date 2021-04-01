@@ -14,4 +14,5 @@ public final class Settings{
   public static final String[] CELL_LABELS = {" ","X","*","O","<>","[]"};
   public static final int CELL_MIN = CELL_X;
   public static final int CELL_MAX = CELL_BOX;
+  public static final int NUM_RANDOM = 0;
 }

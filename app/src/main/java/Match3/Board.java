@@ -17,7 +17,8 @@ class Board
     {
         this.numrows = numrows;
         this.numcols = numcols;
-        future = new FutureBoard(numrows,numcols);
+        future = new FutureBoard(numrows,numcols, NUM_RANDOM);
+        future.dropPieces();
         board = new int[numrows][numcols];
         for(int i=0;i < numrows; i++) {
             for(int j=0;j < numcols; j++) {
@@ -54,6 +55,8 @@ class Board
 
     // set the entire board to empty cells
     public void resetBoard() {
+        future = new FutureBoard(numrows, numcols, NUM_RANDOM);
+        future.dropPieces();
         for(int i=0;i < numrows; i++) {
             for(int j=0;j < numcols; j++) {
                 board[i][j] = CELL_EMPTY;
@@ -91,7 +94,11 @@ class Board
             // If target_index hasn't fully traversed the collumn,
             // add new randomized pieces at the top
             while(target_index >= 0) {
-                thiscol[target_index] = new Random().nextInt(CELL_MAX)+1;
+                System.out.println(future);
+                thiscol[target_index] = future.getNextPiece(j);
+                future.dropPieces();
+                future.fillRandomRows();
+                // thiscol[target_index] = new Random().nextInt(CELL_MAX)+1;
                 target_index--;
             }
 
