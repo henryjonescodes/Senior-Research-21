@@ -15,6 +15,7 @@ class Board
     static final String[] CELL_LABELS = {" ","X","*","O","<>","[]"};
     static final int CELL_MIN = CELL_X;
     static final int CELL_MAX = CELL_BOX;
+    final boolean verbose = true;
     int numrows,numcols;
     int[][] board;
 
@@ -124,6 +125,11 @@ class Board
                 if(0<j && j<numcols-1) {
                     if(board[i][j-1] == board[i][j] &&
                                 board[i][j+1] == board[i][j]) {
+                        if(verbose){
+                          System.out.printf("Matched (%d, %d) with (%d, %d) and (%d, %d)\n", i,j-1,i,j,i,j+1);
+                          System.out.println("Values " + CELL_LABELS[board[i][j-1]]
+                              + ", " + CELL_LABELS[board[i][j]] + ", " + CELL_LABELS[board[i][j+1]]);
+                        }
                         board[i][j] = CELL_EMPTY;
                         board[i][j-1] = CELL_EMPTY;
                         board[i][j+1] = CELL_EMPTY;
@@ -134,6 +140,11 @@ class Board
                 if(0<i && i<numrows-1) {
                     if(board[i-1][j] == board[i][j] &&
                                 board[i+1][j] == board[i][j]) {
+                        if(verbose){
+                          System.out.printf("Matched (%d, %d) with (%d, %d) and (%d, %d)\n", i-1,j,i,j,i+1,j);
+                          System.out.println("Values " + CELL_LABELS[board[i-1][j]]
+                              + ", " + CELL_LABELS[board[i][j]] + ", " + CELL_LABELS[board[i+1][j]]);
+                        }
                         board[i][j] = CELL_EMPTY;
                         board[i-1][j] = CELL_EMPTY;
                         board[i+1][j] = CELL_EMPTY;
@@ -144,37 +155,63 @@ class Board
     }
 
 
-    // check whether the given swap is valid.
-    // returns False if there is already some match on the board (this
-    // should never happen in normal gameplay though).
+    // // check whether the given swap is valid.
+    // // returns False if there is already some match on the board (this
+    // // should never happen in normal gameplay though).
+    // public boolean isValidSwap(int row1,int col1,int row2,int col2) {
+    //     if(row1==row2 && Math.abs(col1-col2)==1) {
+    //         // ok
+    //     } else if (col1==col2 && Math.abs(row1-row2)==1) {
+    //         // ok
+    //     } else {
+    //         return false;
+    //     }
+    //
+    //     Board toyboard = new Board(this);
+    //
+    //     toyboard.eliminateMatches();
+    //     if(toyboard.existsEmptyCell()) {
+    //         return false;
+    //     }
+    //
+    //     int tmp = toyboard.board[row1][col1];
+    //     toyboard.board[row1][col1] = toyboard.board[row2][col2];
+    //     toyboard.board[row2][col2] = tmp;
+    //     toyboard.eliminateMatches();
+    //     if(toyboard.existsEmptyCell()) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
     public boolean isValidSwap(int row1,int col1,int row2,int col2) {
-        if(row1==row2 && Math.abs(col1-col2)==1) {
-            // ok
-        } else if (col1==col2 && Math.abs(row1-row2)==1) {
-            // ok
+        //Are they in the same row AND next to each other
+        if(!(row1 == row2 && Math.abs(col1-col2)==1) && !(col1 == col2 && Math.abs(row1-row2)==1)){
+            return false;
         } else {
-            return false;
-        }
 
-        Board toyboard = new Board(this);
+            //Make a copy of this board and do some tests
+            Board testBoard = new Board(this);
 
-        toyboard.eliminateMatches();
-        if(toyboard.existsEmptyCell()) {
-            return false;
-        }
+            //Is there already a match on the board?
+            testBoard.eliminateMatches();
+            if(testBoard.existsEmptyCell()) {
+                return false;
+            }
 
-        int tmp = toyboard.board[row1][col1];
-        toyboard.board[row1][col1] = toyboard.board[row2][col2];
-        toyboard.board[row2][col2] = tmp;
-        toyboard.eliminateMatches();
-        if(toyboard.existsEmptyCell()) {
-            return true;
-        } else {
-            return false;
+            //This is a valid match, swap the pair and handle matches
+            int thisTile = testBoard.board[row1][col1];
+            testBoard.board[row1][col1] = testBoard.board[row2][col2];
+            testBoard.board[row2][col2] = thisTile;
+            testBoard.eliminateMatches();
+            if(testBoard.existsEmptyCell()) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
-
-    // public boolean isValidSwap(int row1,int col1,int row2,int col2) {
 
 
 
