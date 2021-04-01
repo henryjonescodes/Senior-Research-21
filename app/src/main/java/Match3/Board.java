@@ -8,23 +8,30 @@ import static Match3.Settings.*;
 class Board
 {
     final boolean verbose = false;
+    final boolean printBoardCompare = true;
+    final boolean printAllBoards = true;
     int numrows,numcols;
     int[][] board;
     FutureBoard future;
 
-    // create an empty board
+    // create a board
     Board(int numrows, int numcols)
     {
         this.numrows = numrows;
         this.numcols = numcols;
         future = new FutureBoard(numrows,numcols, NUM_RANDOM);
         future.dropPieces();
+        if(printBoardCompare) {System.out.println("Future \n" + future);}
         board = new int[numrows][numcols];
+
         for(int i=0;i < numrows; i++) {
             for(int j=0;j < numcols; j++) {
-                board[i][j] = CELL_EMPTY;
+                board[i][j] = future.getValueAt(i,j);
             }
         }
+        if(printBoardCompare) {System.out.println("Actual \n" + this);}
+        future.refillBoard();
+        if(printBoardCompare) {System.out.println("New Future \n" + future);}
     }
 
     // construct a copy of an existing board
@@ -64,6 +71,11 @@ class Board
         }
     }
 
+    public void refillBoard() {
+        resetBoard();
+        dropPieces();
+    }
+
     public int getValueAt(int row, int col) {
         return board[row][col];
     }
@@ -94,10 +106,10 @@ class Board
             // If target_index hasn't fully traversed the collumn,
             // add new randomized pieces at the top
             while(target_index >= 0) {
-                System.out.println(future);
                 thiscol[target_index] = future.getNextPiece(j);
                 future.dropPieces();
                 future.fillRandomRows();
+                // if(printAllBoards) {System.out.println("Future \n" + future);}
                 // thiscol[target_index] = new Random().nextInt(CELL_MAX)+1;
                 target_index--;
             }
@@ -107,6 +119,7 @@ class Board
                 board[i][j] = thiscol[i];
             }
         }
+        if(printAllBoards) {System.out.println("Future \n" + future);}
     }
 
     // check if there exists an empty cell
@@ -160,37 +173,6 @@ class Board
             }
         }
     }
-
-
-    // // check whether the given swap is valid.
-    // // returns False if there is already some match on the board (this
-    // // should never happen in normal gameplay though).
-    // public boolean isValidSwap(int row1,int col1,int row2,int col2) {
-    //     if(row1==row2 && Math.abs(col1-col2)==1) {
-    //         // ok
-    //     } else if (col1==col2 && Math.abs(row1-row2)==1) {
-    //         // ok
-    //     } else {
-    //         return false;
-    //     }
-    //
-    //     Board toyboard = new Board(this);
-    //
-    //     toyboard.eliminateMatches();
-    //     if(toyboard.existsEmptyCell()) {
-    //         return false;
-    //     }
-    //
-    //     int tmp = toyboard.board[row1][col1];
-    //     toyboard.board[row1][col1] = toyboard.board[row2][col2];
-    //     toyboard.board[row2][col2] = tmp;
-    //     toyboard.eliminateMatches();
-    //     if(toyboard.existsEmptyCell()) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
 
     public boolean isValidSwap(int row1,int col1,int row2,int col2) {
         //Are they in the same row AND next to each other

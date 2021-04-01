@@ -55,6 +55,10 @@ class FutureBoard
         }
     }
 
+    public int getValueAt(int row, int col) {
+        return board[row][col];
+    }
+
     public int getNumRandomRows(){
         return numRandomRows;
     }
@@ -73,6 +77,20 @@ class FutureBoard
       dropPieces();
       // fillRandomRows();
       return toReturn;
+    }
+
+    // set the entire board to empty cells
+    public void resetBoard() {
+        for(int i=0;i < numrows; i++) {
+            for(int j=0;j < numcols; j++) {
+                board[i][j] = CELL_EMPTY;
+            }
+        }
+    }
+
+    public void refillBoard() {
+      resetBoard();
+      dropPieces();
     }
 
     public void fillRandomRows(){
