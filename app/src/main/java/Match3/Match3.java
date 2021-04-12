@@ -10,6 +10,9 @@ package Match3;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.*;
+import static Match3.Settings.*;
+
 
 /////////////////////////////////////////
 // class Match3 implements ActionListener
@@ -35,7 +38,7 @@ class Match3 implements ActionListener
 
     // ---------------------------New Stuff---------------------------------- //
 
-    private final Color debugColors[] = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE};
+    private final Color debugColors[] = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK};
     private JButton showMatchesButton;
     private JButton showAllCascadesButton;
 
@@ -60,7 +63,7 @@ class Match3 implements ActionListener
 
         for(int i=0;i<numrows;i++) {
             for(int j=0;j<numcols;j++) {
-                boardButtons[i][j] = new JButton(Board.CELL_LABELS[Board.CELL_EMPTY]);
+                boardButtons[i][j] = new JButton(CELL_LABELS[CELL_EMPTY]);
                 boardButtons[i][j].setFont(new Font("Monospaced",Font.PLAIN,20));
                 boardButtons[i][j].setActionCommand(
                     String.valueOf(i) + " " + String.valueOf(j));
@@ -74,6 +77,7 @@ class Match3 implements ActionListener
 
         resetButton.addActionListener(this);
         quitButton.addActionListener(this);
+        showMatchesButton.addActionListener(this);
         buttonBar.add(resetButton);
         buttonBar.add(quitButton);
         buttonBar.add(showMatchesButton);
@@ -88,6 +92,30 @@ class Match3 implements ActionListener
         jfrm.setVisible(true);
 
         reset();
+    }
+
+    public void findValidSwaps(){
+      Agent bond = new Agent();
+      Vector<TilePair> validSwaps = bond.getValidSwaps(gameboard);
+      // System.out.println(validSwaps);
+      int colorCounter = 0;
+      for(TilePair tp : validSwaps){
+        boardButtons[tp.row1][tp.col1].setBackground(debugColors[colorCounter]);
+        boardButtons[tp.row2][tp.col2].setBackground(debugColors[colorCounter]);
+        if(colorCounter >= debugColors.length-1){
+          colorCounter = 0;
+        } else {
+          colorCounter +=1;
+        }
+      }
+    }
+
+    public void resetAllBackgrounds(){
+      for(int i = 0; i <numrows; i++){
+        for(int j = 0; j <numcols; j++){
+            boardButtons[i][j].setBackground(DESELECTED_COLOR);
+        }
+      }
     }
 
     // reset the board to a random state
@@ -115,6 +143,10 @@ class Match3 implements ActionListener
                 System.exit(0);
             case "Reset Board":
                 reset();
+                resetAllBackgrounds();
+                break;
+            case "All Matches":
+                findValidSwaps();
                 break;
             default: // board piece
                 String[] cmd = e.getActionCommand().split(" ");
@@ -164,7 +196,7 @@ class Match3 implements ActionListener
         for(int i=0; i<numrows; i++) {
             for(int j=0; j<numcols; j++) {
                 boardButtons[i][j].setText(
-                   Board.CELL_LABELS[ gameboard.getValueAt(i,j) ]);
+                   CELL_LABELS[ gameboard.getValueAt(i,j) ]);
             }
         }
     }
