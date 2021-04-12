@@ -154,7 +154,7 @@ class FutureBoard
 
     public String toString(){
       StringBuilder SB = new StringBuilder();
-      SB.append("========Board Start =========\n");
+      SB.append("========Board Start =======\n");
       for(int i=0;i < numrows; i++) {
           for(int j=0;j < numcols; j++) {
             SB.append(CELL_LABELS[board[i][j]]);

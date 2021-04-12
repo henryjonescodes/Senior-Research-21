@@ -7,9 +7,6 @@ import static Match3.Settings.*;
 // underlying game engine for Match3
 class Board
 {
-    final boolean verbose = false;
-    final boolean printBoardCompare = true;
-    final boolean printAllBoards = true;
     int numrows,numcols;
     int[][] board;
     FutureBoard future;
@@ -21,7 +18,7 @@ class Board
         this.numcols = numcols;
         future = new FutureBoard(numrows,numcols, NUM_RANDOM);
         future.dropPieces();
-        if(printBoardCompare) {System.out.println("Future \n" + future);}
+        if(PRINT_BOARD_COMPARE) {System.out.println("Future \n" + future);}
         board = new int[numrows][numcols];
 
         for(int i=0;i < numrows; i++) {
@@ -29,9 +26,8 @@ class Board
                 board[i][j] = future.getValueAt(i,j);
             }
         }
-        if(printBoardCompare) {System.out.println("Actual \n" + this);}
+        if(PRINT_BOARD_COMPARE) {System.out.println("Actual \n" + this);}
         future.refillBoard();
-        if(printBoardCompare) {System.out.println("New Future \n" + future);}
     }
 
     // construct a copy of an existing board
@@ -109,7 +105,7 @@ class Board
                 thiscol[target_index] = future.getNextPiece(j);
                 future.dropPieces();
                 future.fillRandomRows();
-                // if(printAllBoards) {System.out.println("Future \n" + future);}
+                // if(PRINT_ALL_BOARDS) {System.out.println("Future \n" + future);}
                 // thiscol[target_index] = new Random().nextInt(CELL_MAX)+1;
                 target_index--;
             }
@@ -119,7 +115,7 @@ class Board
                 board[i][j] = thiscol[i];
             }
         }
-        if(printAllBoards) {System.out.println("Future \n" + future);}
+        if(PRINT_ALL_BOARDS) {System.out.println("Up Next \n" + future);}
     }
 
     // check if there exists an empty cell
@@ -145,7 +141,7 @@ class Board
                 if(0<j && j<numcols-1) {
                     if(board[i][j-1] == board[i][j] &&
                                 board[i][j+1] == board[i][j]) {
-                        if(verbose){
+                        if(PRINT_ALL_MATCHED){
                           System.out.printf("Matched (%d, %d) with (%d, %d) and (%d, %d)\n", i,j-1,i,j,i,j+1);
                           System.out.println("Values " + CELL_LABELS[board[i][j-1]]
                               + ", " + CELL_LABELS[board[i][j]] + ", " + CELL_LABELS[board[i][j+1]]);
@@ -160,7 +156,7 @@ class Board
                 if(0<i && i<numrows-1) {
                     if(board[i-1][j] == board[i][j] &&
                                 board[i+1][j] == board[i][j]) {
-                        if(verbose){
+                        if(PRINT_ALL_MATCHED){
                           System.out.printf("Matched (%d, %d) with (%d, %d) and (%d, %d)\n", i-1,j,i,j,i+1,j);
                           System.out.println("Values " + CELL_LABELS[board[i-1][j]]
                               + ", " + CELL_LABELS[board[i][j]] + ", " + CELL_LABELS[board[i+1][j]]);
@@ -230,7 +226,7 @@ class Board
 
     public String toString(){
       StringBuilder SB = new StringBuilder();
-      SB.append("========Board Start =========\n");
+      SB.append("========Board Start =======\n");
       for(int i=0;i < numrows; i++) {
           for(int j=0;j < numcols; j++) {
             SB.append(CELL_LABELS[board[i][j]]);
