@@ -51,6 +51,7 @@ class BoardMaker extends JPanel implements ActionListener, BoardStateListener
         }
     }
     this.add(boardPanel,BorderLayout.CENTER);
+    this.add(boardPanel);
   }
 
   // handle button presses
