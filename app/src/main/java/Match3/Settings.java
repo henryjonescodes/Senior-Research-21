@@ -46,6 +46,7 @@ public final class Settings{
   //------------------------------DecisionTree----------------------------------
 
   // private static final int NUM_MOVES;
+  private static final int TREE_SPACING = 45; 
   // private static final Dimension BUTTON_SIZE = new Dimension(20, 20);
 
 }

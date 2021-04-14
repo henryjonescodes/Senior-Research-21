@@ -14,6 +14,7 @@ public class ViewContainer extends JPanel {
   //Swing components
   private static JFrame frame;
   private static BoardMaker bm, bm2;
+  private JScrollPane scroller;
   private DecisionTree dt;
   private BorderLayout layout;
 
@@ -28,14 +29,17 @@ public class ViewContainer extends JPanel {
     //Initialize toolbar and diagram
     bm = new BoardMaker();
     dt = new DecisionTree(5);
+    scroller = new JScrollPane(dt,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
 
     // bm2 = new BoardMaker();
 
     //Add components to frame and layout
-    this.add(bm,BorderLayout.NORTH);
-    this.add(dt,BorderLayout.SOUTH);
+    this.add(bm,BorderLayout.PAGE_START);
+    this.add(scroller,BorderLayout.CENTER);
 
-    dt.generateButtons();
+    this.setPreferredSize(new Dimension(1000,1000));
+    // dt.generateButtons();
 
     layout.layoutContainer(this);
   }
@@ -85,9 +89,9 @@ public class ViewContainer extends JPanel {
       frame.add(display);
       frame.pack();
 
-      frame.setSize(500,1000);
+      frame.setSize(500,700);
 
-      frame.setResizable(false);
+      frame.setResizable(true);
       frame.setVisible(true);
   }
 }
