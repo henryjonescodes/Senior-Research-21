@@ -28,12 +28,14 @@ public class ViewContainer extends JPanel {
     //Initialize toolbar and diagram
     bm = new BoardMaker();
     dt = new DecisionTree(5);
-    dt.generateTree();
+
     // bm2 = new BoardMaker();
 
     //Add components to frame and layout
     this.add(bm,BorderLayout.NORTH);
-    // this.add(bm2,BorderLayout.SOUTH);
+    this.add(dt,BorderLayout.SOUTH);
+
+    dt.generateButtons();
 
     layout.layoutContainer(this);
   }
