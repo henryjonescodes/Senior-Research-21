@@ -32,6 +32,14 @@ class DecisionTree extends JPanel
     Map<Integer, Vector<JButton>> buttons =  generateButtons();
     layoutButtons(buttons, buttonPanel);
     this.setLayout(layout);
+    // this.setPreferredSize(new Dimension(500,10));
+    this.setPreferredSize(new Dimension((TREE_SPACING_X + (int)BUTTON_SIZE.getWidth())
+          *(buttons.get(numMoves).size() + 1), TREE_SPACING_Y*(numMoves + 1)));
+    // this.setPreferredSize(new Dimension(1000, TREE_SPACING_Y*(numMoves + 1)));
+
+
+
+    // this.setPreferredSize(new Dimension(500,400));
     // this.add(buttonPanel);
 
   }
@@ -100,7 +108,6 @@ class DecisionTree extends JPanel
             for(int i = 0; i < buttonVec.size(); i++){
               JButton thisBtn = buttonVec.elementAt(i);
               this.add(thisBtn);
-              // System.out.println("added: Move: " + move + "Item: " + i + "\n");
               if(i == 0){
                 //Attatch this one to the WEST side of the panel
                 layout.putConstraint(SpringLayout.WEST, thisBtn,
@@ -112,7 +119,6 @@ class DecisionTree extends JPanel
                        TREE_SPACING_X,
                        SpringLayout.EAST, buttonVec.elementAt(i-1));
               } else {
-                System.out.println("constrained: Move: " + move + "Item: " + i + "\n");
                 //Attatch this one to the EAST side of the panel
                 layout.putConstraint(SpringLayout.WEST, thisBtn,
                        TREE_SPACING_X,
