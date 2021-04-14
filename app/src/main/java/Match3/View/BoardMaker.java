@@ -1,15 +1,16 @@
-package Match3;
+package Match3.View;
 /*
  * @author Henry Jones
  */
-
+import Match3.Listeners.*;
+import Match3.Document.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import static Match3.Settings.*;
 
-class BoardMaker extends JPanel implements ActionListener, BoardStateListener
+public class BoardMaker extends JPanel implements ActionListener, BoardStateListener
 {
   BoardState displayedBoard;
 
@@ -21,6 +22,8 @@ class BoardMaker extends JPanel implements ActionListener, BoardStateListener
   JPanel boardPanel;
   GridLayout layout;
 
+  int numRows, numCols;
+
   final Color DESELECTED_COLOR = Color.LIGHT_GRAY;
   final Color SELECTED_COLOR = Color.YELLOW;
 
@@ -28,16 +31,39 @@ class BoardMaker extends JPanel implements ActionListener, BoardStateListener
 
 
   public BoardMaker(){
-    layout = new GridLayout(NUM_ROWS,NUM_COLS,3,3);
-    displayedBoard = new BoardState(NUM_ROWS,NUM_COLS);
-    boardButtons = new JButton[NUM_ROWS][NUM_COLS];
-    boardPanel = new JPanel(layout);
-
+    numRows = NUM_ROWS;
+    numCols = NUM_COLS;
+    displayedBoard = new BoardState(numRows,numCols);
     displayedBoard.addListener(this);
+    go(numRows, numCols);
+  }
+
+  public BoardMaker(BoardState board){
+    numRows = board.getNumRows();
+    numCols = board.getNumCols();
+    displayedBoard = board;
+    displayedBoard.addListener(this);
+    go(numRows, numCols);
+  }
+
+  public BoardMaker(int numRows, int numCols){
+    this.numRows = numRows;
+    this.numCols = numCols;
+    displayedBoard = new BoardState(this.numRows,this.numCols);
+    displayedBoard.addListener(this);
+    go(this.numRows, this.numCols);
+  }
+
+
+
+  public void go(int rows, int cols){
+    layout = new GridLayout(rows,cols,3,3);
+    boardButtons = new JButton[rows][cols];
+    boardPanel = new JPanel(layout);
     this.setLayout(new BorderLayout());
 
-    for(int i=0;i<NUM_ROWS;i++) {
-        for(int j=0;j<NUM_COLS;j++) {
+    for(int i=0;i<rows;i++) {
+        for(int j=0;j<cols;j++) {
             boardButtons[i][j] = new JButton(CELL_LABELS[CELL_EMPTY]);
             boardButtons[i][j].setFont(new Font("Monospaced",Font.PLAIN,20));
             boardButtons[i][j].setActionCommand(
@@ -52,6 +78,7 @@ class BoardMaker extends JPanel implements ActionListener, BoardStateListener
     }
     this.add(boardPanel,BorderLayout.CENTER);
     this.add(boardPanel);
+    update();
   }
 
   // handle button presses

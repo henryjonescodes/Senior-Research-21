@@ -1,4 +1,4 @@
-package Match3;
+package Match3.Listeners;
 
 public interface BoardStateListener {
 

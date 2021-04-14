@@ -26,5 +26,5 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'Match3.ViewContainer'
+    mainClass = 'Match3.View.ViewContainer'
 }

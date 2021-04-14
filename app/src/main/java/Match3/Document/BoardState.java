@@ -1,11 +1,13 @@
-package Match3;
+package Match3.Document;
 
+import Match3.View.*;
+import Match3.Listeners.*;
 import java.util.*;
 import static Match3.Settings.*;
 
 // class Board
 // underlying game engine for Match3
-class BoardState
+public class BoardState
 {
 
   final boolean verbose = false;
@@ -15,7 +17,7 @@ class BoardState
   int[][] board;
 
 
-  BoardState(int numrows, int numcols)
+  public BoardState(int numrows, int numcols)
   {
      // super(numrows, numcols);
      listeners = new Vector<BoardStateListener>();
@@ -31,7 +33,7 @@ class BoardState
   }
 
   // construct a copy of an existing board
-  BoardState(BoardState oldboard) {
+  public BoardState(BoardState oldboard) {
       // super(oldboard);
       listeners = new Vector<BoardStateListener>();
       numrows = oldboard.getNumRows();
