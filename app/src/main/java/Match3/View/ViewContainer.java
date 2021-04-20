@@ -1,20 +1,27 @@
-package Match3;
+package Match3.View;
 /*
  * @author Henry Jones
  */
 
+import Match3.Listeners.*;
+import Match3.Document.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
-import static Match3.Settings.*;
+// import static Match3.Settings.*;
 
-public class ViewContainer extends JPanel {
+public class ViewContainer extends JPanel implements TreeSelectionListener{
 
   //Swing components
   private static JFrame frame;
-  private static BoardMaker bm, bm2;
+  private static BoardMaker bm;
+  private JScrollPane scroller;
+  private DecisionTree dt;
+  private DecisionTreeView dtv;
   private BorderLayout layout;
+
+
 
   /**
   * ViewContainer constructor
@@ -26,12 +33,27 @@ public class ViewContainer extends JPanel {
 
     //Initialize toolbar and diagram
     bm = new BoardMaker();
+    dt = new DecisionTree(5);
+    dtv = new DecisionTreeView(dt);
+
+    dtv.addListener(this);
+
+    // for(String s: dtv.stateNames()){
+    //   System.out.print(s + ", ");
+    // }
+    // System.out.print("\n");
+
+    scroller = new JScrollPane(dtv,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+
     // bm2 = new BoardMaker();
 
     //Add components to frame and layout
-    this.add(bm,BorderLayout.NORTH);
-    // this.add(bm2,BorderLayout.SOUTH);
-;
+    this.add(bm,BorderLayout.PAGE_START);
+    this.add(scroller,BorderLayout.CENTER);
+
+    this.setPreferredSize(new Dimension(1000,1000));
+    // dtv.generateButtons();
 
     layout.layoutContainer(this);
   }
@@ -46,6 +68,15 @@ public class ViewContainer extends JPanel {
     repaint();
   }
 
+  public void swapBoard(BoardState state){
+    this.remove(bm);
+    // bm = null;
+    // bm = new BoardMaker(state);
+    bm.updateState(state, 0);
+    this.add(bm,BorderLayout.PAGE_START);
+    update();
+  }
+
   /**
   * protects the rest of the paint code from
   * irrevocable changes
@@ -56,19 +87,6 @@ public class ViewContainer extends JPanel {
       super.paintComponent(g);
   }
 
-  // /**
-  // * gets the preferred size of the layout
-  // * @return the Dimension
-  // */
-  // @Override
-  // public Dimension getPreferredSize() {
-  //       int minWidth = Math.max((int)MIN_WINDOW_SIZE.getWidth(), (int)layout.preferredLayoutSize(this).getWidth());
-  //       int minHeight = Math.max((int)MIN_WINDOW_SIZE.getHeight(), (int)layout.preferredLayoutSize(this).getHeight());
-  //
-  //       return new Dimension(minWidth, minHeight);
-  //       // return layout.preferredLayoutSize(this);
-  //       // return MIN_WINDOW_SIZE;
-  // }
 
   /**
   * displays view
@@ -81,9 +99,9 @@ public class ViewContainer extends JPanel {
       frame.add(display);
       frame.pack();
 
-      // frame.setSize(500,500);
+      frame.setSize(500,700);
 
-      frame.setResizable(false);
+      frame.setResizable(true);
       frame.setVisible(true);
   }
 }

@@ -1,4 +1,4 @@
-package Match3;
+package Match3.Depreciated;
 
 import java.util.*;
 

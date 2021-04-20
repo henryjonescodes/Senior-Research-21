@@ -30,8 +30,8 @@ public final class Settings{
 
   //--------------------------------BoardMaker----------------------------------
 
-  public static final int NUM_ROWS = 5;
-  public static final int NUM_COLS = 5;
+  public static final int NUM_ROWS = 7;
+  public static final int NUM_COLS = 7;
   public static final int NUM_VALUES = 6;
   public static final Dimension BOARD_SIZE = new Dimension(500,500);
 
@@ -41,4 +41,12 @@ public final class Settings{
 
 
   public static final Dimension MIN_WINDOW_SIZE = new Dimension(500,500);
+
+
+  //------------------------------DecisionTree----------------------------------
+
+  // private static final int NUM_MOVES;
+  private static final int TREE_SPACING = 45; 
+  // private static final Dimension BUTTON_SIZE = new Dimension(20, 20);
+
 }
