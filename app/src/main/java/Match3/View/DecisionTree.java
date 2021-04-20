@@ -47,6 +47,7 @@ public class DecisionTree extends JPanel implements ActionListener
     stateButtons = generateButtons(stateNames);
     gameStates = generateGameStates(stateNames, NUM_ROWS,NUM_COLS);
     layoutButtons(stateButtons, buttonPanel);
+    // stateToSwap = gameStates.get(1).elementAt(0);
 
 
     this.setLayout(layout);
@@ -59,6 +60,7 @@ public class DecisionTree extends JPanel implements ActionListener
 
     // this.setPreferredSize(new Dimension(500,400));
     // this.add(buttonPanel);
+    // notifyListeners();
 
   }
 
@@ -117,7 +119,7 @@ public class DecisionTree extends JPanel implements ActionListener
     for(int move: tree.keySet()){
       Vector<BoardState> stateVec = new Vector<BoardState>();
       for(String label: tree.get(move)){
-        BoardState state = new BoardState(rows,cols);
+        BoardState state = new BoardState(rows,cols,label);
         stateVec.add(state);
       }
       states.put(move, stateVec);

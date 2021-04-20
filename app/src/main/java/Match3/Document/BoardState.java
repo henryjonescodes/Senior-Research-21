@@ -15,15 +15,19 @@ public class BoardState
   int numrows,numcols;
   int numRandomRows;
   int[][] board;
+  private String name;
 
+  private Vector<BoardState> cascades;
 
-  public BoardState(int numrows, int numcols)
+  public BoardState(int numrows, int numcols, String name)
   {
      // super(numrows, numcols);
      listeners = new Vector<BoardStateListener>();
      this.numrows = numrows;
      this.numcols = numcols;
+     this.name = name;
      numRandomRows = 0;
+     cascades = new Vector<BoardState>();
      board = new int[numrows][numcols];
      for(int i=0;i < numrows; i++) {
        for(int j=0;j < numcols; j++) {
@@ -33,11 +37,13 @@ public class BoardState
   }
 
   // construct a copy of an existing board
-  public BoardState(BoardState oldboard) {
+  public BoardState(BoardState oldboard, String name) {
       // super(oldboard);
       listeners = new Vector<BoardStateListener>();
       numrows = oldboard.getNumRows();
       numcols = oldboard.getNumCols();
+      this.name = name;
+      cascades = new Vector<BoardState>();
       board = new int[numrows][numcols];
       for(int i=0;i < numrows; i++) {
           for(int j=0;j < numcols; j++) {
@@ -52,6 +58,10 @@ public class BoardState
 
   public void setValueAt(int row, int col, int value) {
     board[row][col] = value;
+  }
+
+  public String getName(){
+    return name;
   }
 
   public int getNumRows() {
@@ -79,6 +89,29 @@ public class BoardState
               board[i][j] = CELL_EMPTY;
           }
       }
+  }
+
+  public void addCascade(){
+    System.out.println("trying to make board state: " + name + "~" + String.valueOf(1));
+    BoardState temp;
+    if(numCascades() == 0){
+      temp = new BoardState(this, name + "~" + String.valueOf(numCascades()+1));
+    } else {
+      temp = new BoardState(getCascade(numCascades()-1), name + "~" + String.valueOf(numCascades()+1));
+    }
+    cascades.add(temp);
+  }
+
+  public int numCascades(){
+    return cascades.size();
+  }
+
+  public BoardState getCascade(int index){
+    return cascades.get(index);
+  }
+
+  public void removeLastCascade(){
+    cascades.remove(cascades.size()-1);
   }
 
   public String toString(){

@@ -68,7 +68,8 @@ public class ViewContainer extends JPanel implements TreeSelectionListener{
   public void swapBoard(BoardState state){
     this.remove(bm);
     // bm = null;
-    bm = new BoardMaker(state);
+    // bm = new BoardMaker(state);
+    bm.updateState(state, 0);
     this.add(bm,BorderLayout.PAGE_START);
     update();
   }

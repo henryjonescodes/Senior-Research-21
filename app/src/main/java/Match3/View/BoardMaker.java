@@ -12,28 +12,31 @@ import static Match3.Settings.*;
 
 public class BoardMaker extends JPanel implements ActionListener, BoardStateListener
 {
-  BoardState displayedBoard;
+  BoardState displayedBoard, rootBoard;
 
   JButton boardButtons[][];
   JLabel statusBar;
   JButton resetButton;
   JButton quitButton;
-  JPanel buttonBar;
   JPanel boardPanel;
+  JLabel nameLabel;
   GridLayout layout;
 
-  int numRows, numCols;
+  int numRows, numCols, numCascades, displayedCascade;
 
   final Color DESELECTED_COLOR = Color.LIGHT_GRAY;
   final Color SELECTED_COLOR = Color.YELLOW;
 
   private final Color PIECE_COLORS[] = {Color.LIGHT_GRAY, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK};
 
+  //For cascades, update name button and state then generate new buttons??
 
   public BoardMaker(){
     numRows = NUM_ROWS;
     numCols = NUM_COLS;
-    displayedBoard = new BoardState(numRows,numCols);
+    numCascades = 0;
+    displayedCascade = 0;
+    displayedBoard = new BoardState(numRows,numCols, "unnamed");
     displayedBoard.addListener(this);
     go(numRows, numCols);
   }
@@ -41,6 +44,8 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   public BoardMaker(BoardState board){
     numRows = board.getNumRows();
     numCols = board.getNumCols();
+    numCascades = board.numCascades();
+    displayedCascade = 0;
     displayedBoard = board;
     displayedBoard.addListener(this);
     go(numRows, numCols);
@@ -49,11 +54,38 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   public BoardMaker(int numRows, int numCols){
     this.numRows = numRows;
     this.numCols = numCols;
-    displayedBoard = new BoardState(this.numRows,this.numCols);
+    numCascades = 0;
+    displayedCascade = 0;
+    displayedBoard = new BoardState(this.numRows,this.numCols,"unnamed");
     displayedBoard.addListener(this);
     go(this.numRows, this.numCols);
   }
 
+  public void updateState(BoardState board,int cascade){
+    rootBoard = board;
+    displayedCascade = cascade;
+
+    if(displayedCascade >= 1){
+      displayedBoard = board.getCascade(displayedCascade-1);
+      System.out.println("trying to display " + displayedBoard.getName());
+    } else {
+      displayedBoard = board;
+    }
+
+    nameLabel.setText(displayedBoard.getName());
+    numRows = displayedBoard.getNumRows();
+    numCols = displayedBoard.getNumCols();
+    numCascades = displayedBoard.numCascades();
+    displayedBoard.addListener(this);
+    update();
+  }
+
+  // public void displayCascade(BoardState board, int num){
+  //   if(num <= numCascades){
+  //     displayedCascade = num;
+  //     updateState(board.getCascade(displayedCascade), displayedCascade);
+  //   }
+  // }
 
 
   public void go(int rows, int cols){
@@ -76,24 +108,101 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
             boardButtons[i][j].setBorderPainted(false);
         }
     }
+    this.add(makeToolbar(),BorderLayout.PAGE_START);
     this.add(boardPanel,BorderLayout.CENTER);
+    // this.add(nameLabel,BorderLayout.PAGE_END);
     this.add(boardPanel);
     update();
   }
 
+  public JToolBar makeToolbar(){
+    nameLabel = new JLabel("Null");
+    JToolBar toolBar = new JToolBar();
+    JButton addCascade, removeCascade, next, prev, agent0, agent1, highlight;
+    addCascade = new JButton("Add Cascade");
+    removeCascade = new JButton("Remove Cascade");
+    next = new JButton("Next");
+    prev = new JButton("Prev");
+    agent0 = new JButton("Agent 0");
+    agent1 = new JButton("Agent 1");
+    highlight = new JButton("Highlight");
+
+    addCascade.addActionListener(this);
+    removeCascade.addActionListener(this);
+    agent0.addActionListener(this);
+    agent1.addActionListener(this);
+    highlight.addActionListener(this);
+    next.addActionListener(this);
+    prev.addActionListener(this);
+
+    toolBar.add(addCascade);
+    toolBar.add(removeCascade);
+    toolBar.addSeparator(new Dimension(10,10));
+    toolBar.add(prev);
+    toolBar.add(nameLabel);
+    toolBar.add(next);
+    toolBar.addSeparator(new Dimension(10,10));
+    toolBar.add(agent0);
+    toolBar.addSeparator(new Dimension(10,10));
+    toolBar.add(agent1);
+    toolBar.addSeparator(new Dimension(10,10));
+    toolBar.add(highlight);
+
+    toolBar.setFloatable(false);
+
+    return toolBar;
+  }
+
+  private void addCascade(){
+    rootBoard.addCascade();
+    displayedCascade += 1;
+    System.out.println("trying to update");
+    updateState(rootBoard, displayedCascade);
+  }
+
+  private void removeCascade(){
+    displayedCascade -=1;
+    System.out.println("trying to delete");
+    updateState(rootBoard, displayedCascade);
+    rootBoard.removeLastCascade();
+  }
+
+  private void previous(){
+    if(displayedCascade > 0){
+      displayedCascade = displayedCascade - 1;
+      updateState(rootBoard, displayedCascade);
+    }
+  }
+
+  private void next(){
+    if(displayedCascade < rootBoard.numCascades()){
+      displayedCascade = displayedCascade + 1;
+      updateState(rootBoard, displayedCascade);
+    }
+  }
+
   // handle button presses
   public void actionPerformed(ActionEvent e) {
-      // setStatus("Points: " + String.valueOf(points));
+      System.out.println(e.getActionCommand());
       switch(e.getActionCommand()) {
-          // case "Exit":
-          //     System.exit(0);
-          // case "Reset Board":
-          //     reset();
-          //     resetAllBackgrounds();
-          //     break;
-          // case "All Matches":
-          //     findValidSwaps();
-          //     break;
+          case "Add Cascade":
+              addCascade();
+              break;
+          case "Remove Cascade":
+              removeCascade();
+              break;
+          case "Agent 0":
+              break;
+          case "Agent 1":
+              break;
+          case "Highlight":
+              break;
+          case "Prev":
+              previous();
+              break;
+          case "Next":
+              next();
+              break;
           default: // board piece
               String[] cmd = e.getActionCommand().split(" ");
               int cmdrow = Integer.parseInt(cmd[0]);
