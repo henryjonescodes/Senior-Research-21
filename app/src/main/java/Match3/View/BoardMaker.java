@@ -8,10 +8,32 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
-import static Match3.Settings.*;
+// import static Match3.Settings.*;
 
 public class BoardMaker extends JPanel implements ActionListener, BoardStateListener
 {
+  public static final int CELL_EMPTY = 0;   // empty cell
+  public static final int CELL_X = 1;       // X
+  public static final int CELL_STAR = 2;    // *
+  public static final int CELL_O = 3;       // O
+  public static final int CELL_DIAMOND = 4; // <>
+  public static final int CELL_BOX = 5;     // []
+  public static final String[] CELL_LABELS = {" ","X","*","O","<>","[]"};
+  public static final int CELL_MIN = CELL_X;
+  public static final int CELL_MAX = CELL_BOX;
+  public static final Dimension BOARD_SIZE = new Dimension(500,500);
+  public static final Color DESELECTED_COLOR = Color.LIGHT_GRAY;
+  public static final Color SELECTED_COLOR = Color.YELLOW;
+  public static final Color PIECE_COLORS[] = {Color.LIGHT_GRAY, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK};
+  public static final int NUM_VALUES = 6;
+
+
+  // Debug and tracing
+  public static final boolean PRINT_ALL_MATCHED = false;
+  public static final boolean PRINT_BOARD_COMPARE = false;
+  public static final boolean PRINT_ALL_BOARDS = true;
+
+
   BoardState displayedBoard, rootBoard;
 
   JButton boardButtons[][];
@@ -24,16 +46,12 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
   int numRows, numCols, numCascades, displayedCascade;
 
-  final Color DESELECTED_COLOR = Color.LIGHT_GRAY;
-  final Color SELECTED_COLOR = Color.YELLOW;
-
-  private final Color PIECE_COLORS[] = {Color.LIGHT_GRAY, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK};
 
   //For cascades, update name button and state then generate new buttons??
 
   public BoardMaker(){
-    numRows = NUM_ROWS;
-    numCols = NUM_COLS;
+    numRows = DecisionTree.NUM_ROWS;
+    numCols = DecisionTree.NUM_COLS;
     numCascades = 0;
     displayedCascade = 0;
     displayedBoard = new BoardState(numRows,numCols, "unnamed");
@@ -79,13 +97,6 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     displayedBoard.addListener(this);
     update();
   }
-
-  // public void displayCascade(BoardState board, int num){
-  //   if(num <= numCascades){
-  //     displayedCascade = num;
-  //     updateState(board.getCascade(displayedCascade), displayedCascade);
-  //   }
-  // }
 
 
   public void go(int rows, int cols){
@@ -217,8 +228,8 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   }
 
   public void update(){
-    for(int i=0; i<NUM_ROWS; i++) {
-        for(int j=0; j<NUM_COLS; j++) {
+    for(int i=0; i<numRows; i++) {
+        for(int j=0; j<numCols; j++) {
           int value = displayedBoard.getValueAt(i,j);
             boardButtons[i][j].setText(CELL_LABELS[value]);
             boardButtons[i][j].setBackground(PIECE_COLORS[value]);

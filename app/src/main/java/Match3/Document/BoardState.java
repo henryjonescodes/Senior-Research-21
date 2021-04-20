@@ -3,11 +3,12 @@ package Match3.Document;
 import Match3.View.*;
 import Match3.Listeners.*;
 import java.util.*;
-import static Match3.Settings.*;
+import java.io.*;
+// import static Match3.Settings.*;
 
 // class Board
 // underlying game engine for Match3
-public class BoardState
+public class BoardState implements Serializable
 {
 
   final boolean verbose = false;
@@ -31,7 +32,7 @@ public class BoardState
      board = new int[numrows][numcols];
      for(int i=0;i < numrows; i++) {
        for(int j=0;j < numcols; j++) {
-           board[i][j] = CELL_EMPTY;
+           board[i][j] = BoardMaker.CELL_EMPTY;
        }
      }
   }
@@ -74,8 +75,8 @@ public class BoardState
 
   public void cycleValues(int row, int col){
     int current = getValueAt(row,col);
-    if(current == NUM_VALUES-1){
-      setValueAt(row,col,CELL_EMPTY);
+    if(current == BoardMaker.NUM_VALUES-1){
+      setValueAt(row,col,BoardMaker.CELL_EMPTY);
     } else {
       setValueAt(row,col, current+1);
     }
@@ -86,7 +87,7 @@ public class BoardState
   public void resetBoard() {
       for(int i=0;i < numrows; i++) {
           for(int j=0;j < numcols; j++) {
-              board[i][j] = CELL_EMPTY;
+              board[i][j] = BoardMaker.CELL_EMPTY;
           }
       }
   }
@@ -119,7 +120,7 @@ public class BoardState
     SB.append("========Board Start =======\n");
     for(int i=0;i < numrows; i++) {
         for(int j=0;j < numcols; j++) {
-          SB.append(CELL_LABELS[board[i][j]]);
+          SB.append(BoardMaker.CELL_LABELS[board[i][j]]);
           if(j < numcols - 1){
             SB.append(" | ");
           }

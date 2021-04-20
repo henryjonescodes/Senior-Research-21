@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
-import static Match3.Settings.*;
+// import static Match3.Settings.*;
 
 public class ViewContainer extends JPanel implements TreeSelectionListener{
 
@@ -18,6 +18,7 @@ public class ViewContainer extends JPanel implements TreeSelectionListener{
   private static BoardMaker bm;
   private JScrollPane scroller;
   private DecisionTree dt;
+  private DecisionTreeView dtv;
   private BorderLayout layout;
 
 
@@ -33,14 +34,16 @@ public class ViewContainer extends JPanel implements TreeSelectionListener{
     //Initialize toolbar and diagram
     bm = new BoardMaker();
     dt = new DecisionTree(5);
-    dt.addListener(this);
+    dtv = new DecisionTreeView(dt);
 
-    // for(String s: dt.stateNames()){
+    dtv.addListener(this);
+
+    // for(String s: dtv.stateNames()){
     //   System.out.print(s + ", ");
     // }
     // System.out.print("\n");
 
-    scroller = new JScrollPane(dt,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    scroller = new JScrollPane(dtv,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 
     // bm2 = new BoardMaker();
@@ -50,7 +53,7 @@ public class ViewContainer extends JPanel implements TreeSelectionListener{
     this.add(scroller,BorderLayout.CENTER);
 
     this.setPreferredSize(new Dimension(1000,1000));
-    // dt.generateButtons();
+    // dtv.generateButtons();
 
     layout.layoutContainer(this);
   }

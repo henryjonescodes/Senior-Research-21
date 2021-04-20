@@ -9,9 +9,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
-import static Match3.Settings.*;
+// import static Match3.Settings.*;
 
-public class DecisionTree extends JPanel implements ActionListener
+public class DecisionTreeView extends JPanel implements ActionListener
 {
 
   private static final int TREE_SPACING_Y = 40;
@@ -21,6 +21,8 @@ public class DecisionTree extends JPanel implements ActionListener
 
   private SpringLayout layout;
   private JPanel buttonPanel;
+
+  private DecisionTree dt;
   private int numMoves;
   private Map<Integer, Vector<String>> stateNames;
   private Map<Integer, Vector<JButton>> stateButtons;
@@ -30,72 +32,29 @@ public class DecisionTree extends JPanel implements ActionListener
 
   private BoardState stateToSwap;
 
-
-  // private JPanel treePanel;
-
-  public DecisionTree(int numMoves){
+  public DecisionTreeView(DecisionTree tree){
     listeners = new Vector<TreeSelectionListener>();
 
     layout = new SpringLayout();
     buttonPanel = new JPanel();
     buttonPanel.setLayout(layout);
 
-    this.numMoves = numMoves;
+    numMoves = tree.getNumMoves();
     this.setBorder(BorderFactory.createLineBorder(Color.black));
 
-    stateNames = generateTree();
-    stateButtons = generateButtons(stateNames);
-    gameStates = generateGameStates(stateNames, NUM_ROWS,NUM_COLS);
-    layoutButtons(stateButtons, buttonPanel);
-    // stateToSwap = gameStates.get(1).elementAt(0);
+    dt = new DecisionTree(numMoves);
 
+    stateNames = dt.getStateNames();
+    gameStates = dt.getGameStates();
+    stateButtons = generateButtons(stateNames);
+
+    layoutButtons(stateButtons, buttonPanel);
 
     this.setLayout(layout);
-    // this.setPreferredSize(new Dimension(500,10));
     this.setPreferredSize(new Dimension((TREE_SPACING_X + (int)BUTTON_SIZE.getWidth())
           *(stateButtons.get(numMoves).size() + 1), TREE_SPACING_Y*(numMoves + 1)));
-    // this.setPreferredSize(new Dimension(1000, TREE_SPACING_Y*(numMoves + 1)));
-
-
-
-    // this.setPreferredSize(new Dimension(500,400));
-    // this.add(buttonPanel);
-    // notifyListeners();
-
   }
 
-  public Map<Integer, Vector<String>> generateTree(){
-    Map<Integer, Vector<String>> tempMap = new HashMap<Integer, Vector<String>>();
-    Vector<String> firstMove = new Vector<String>();
-    firstMove.add("1");
-    tempMap.put(1, firstMove);
-    for(int move = 2; move <= numMoves; move++){
-      Vector<String> tempVec = new Vector<String>();
-      Vector<String> previousMoves = tempMap.get(move-1);
-
-      for(int i = 0; i < tempMap.get(move-1).size(); i++){
-        String previous = tempMap.get(move-1).get(i);
-        String moveA = String.valueOf(previous) + ".1";
-        String moveB = String.valueOf(previous) + ".0";
-
-        tempVec.add(moveA);
-        tempVec.add(moveB);
-      }
-      tempMap.put(move, tempVec);
-    }
-
-    // //Just printing stuff for testing
-    // for(int i : tempMap.keySet()){
-    //   System.out.print("\n" + i + "-->");
-    //   for(int j = 0; j < tempMap.get(i).size(); j++){
-    //     System.out.print(tempMap.get(i).get(j));
-    //     if(j<tempMap.get(i).size() - 1){
-    //       System.out.print(", ");
-    //     }
-    //   }
-    // }
-    return tempMap;
-  }
 
   public Map<Integer, Vector<JButton>> generateButtons(Map<Integer, Vector<String>> tree){
     Map<Integer, Vector<JButton>> buttonMap = new HashMap<Integer, Vector<JButton>>();
@@ -112,19 +71,6 @@ public class DecisionTree extends JPanel implements ActionListener
       buttonMap.put(move, buttonVec);
     }
     return buttonMap;
-  }
-
-  public Map<Integer, Vector<BoardState>> generateGameStates(Map<Integer, Vector<String>> tree, int rows, int cols){
-    Map<Integer, Vector<BoardState>> states = new HashMap<Integer, Vector<BoardState>>();
-    for(int move: tree.keySet()){
-      Vector<BoardState> stateVec = new Vector<BoardState>();
-      for(String label: tree.get(move)){
-        BoardState state = new BoardState(rows,cols,label);
-        stateVec.add(state);
-      }
-      states.put(move, stateVec);
-    }
-    return states;
   }
 
   public void layoutButtons(Map<Integer, Vector<JButton>> buttons, JPanel panel) {
@@ -181,7 +127,7 @@ public class DecisionTree extends JPanel implements ActionListener
               String[] cmd = e.getActionCommand().split(" ");
               int key = Integer.parseInt(cmd[0]);
               int index = Integer.parseInt(cmd[1]);
-              stateToSwap = gameStates.get(key).elementAt(index);
+              stateToSwap = dt.getGameStates().get(key).elementAt(index);
               notifyListeners();
               break;
       }
@@ -193,18 +139,6 @@ public class DecisionTree extends JPanel implements ActionListener
       total += stateNames.get(move).size();
     }
     return total;
-  }
-
-  public String[] stateNames(){
-    String[] names = new String[numStates()];
-    int index = 0;
-    for(int move: stateNames.keySet()){
-      for(int state = 0; state < stateNames.get(move).size(); state++){
-        names[index] = stateNames.get(move).elementAt(state);
-        index += 1;
-      }
-    }
-    return names;
   }
 
   /**
