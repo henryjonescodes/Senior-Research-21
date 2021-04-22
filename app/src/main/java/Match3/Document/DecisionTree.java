@@ -14,8 +14,8 @@ import java.io.*;
 
 public class DecisionTree implements Serializable
 {
-  public static final int NUM_ROWS = 7;
-  public static final int NUM_COLS = 7;
+  private final int NUM_ROWS = 7;
+  private final int NUM_COLS = 7;
   private int numMoves;
   private Map<Integer, Vector<String>> stateNames;
   private Map<Integer, Vector<BoardState>> gameStates;
@@ -23,13 +23,21 @@ public class DecisionTree implements Serializable
 
 
   public DecisionTree(int numMoves){
+    System.out.println("Constructor");
     this.numMoves = numMoves;
+  }
+
+  public void generateBlankTree(){
     stateNames = generateTree();
     gameStates = generateGameStates(stateNames, NUM_ROWS,NUM_COLS);
   }
 
   public int getNumMoves(){
     return numMoves;
+  }
+
+  public BoardState getInitialState(){
+    return gameStates.get(1).elementAt(0);
   }
 
   public Map<Integer, Vector<String>> generateTree(){

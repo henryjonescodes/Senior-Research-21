@@ -26,6 +26,8 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   public static final Color SELECTED_COLOR = Color.YELLOW;
   public static final Color PIECE_COLORS[] = {Color.LIGHT_GRAY, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK};
   public static final int NUM_VALUES = 6;
+  private final int NUM_ROWS = 7;
+  private final int NUM_COLS = 7;
 
 
   // Debug and tracing
@@ -33,6 +35,11 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   public static final boolean PRINT_BOARD_COMPARE = false;
   public static final boolean PRINT_ALL_BOARDS = true;
 
+  private JButton addCascade, removeCascade, next, prev, agent0, agent1, highlight;
+  private JToolBar toolBar;
+
+  private boolean agentA_select, agentB_select, selecting;
+  private int[] selection = new int[4];
 
   BoardState displayedBoard, rootBoard;
 
@@ -50,8 +57,8 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   //For cascades, update name button and state then generate new buttons??
 
   public BoardMaker(){
-    numRows = DecisionTree.NUM_ROWS;
-    numCols = DecisionTree.NUM_COLS;
+    numRows = NUM_ROWS;
+    numCols = NUM_COLS;
     numCascades = 0;
     displayedCascade = 0;
     displayedBoard = new BoardState(numRows,numCols, "unnamed");
@@ -82,6 +89,9 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   public void updateState(BoardState board,int cascade){
     rootBoard = board;
     displayedCascade = cascade;
+    agentA_select = false;
+    agentB_select = false;
+    selecting = false;
 
     if(displayedCascade >= 1){
       displayedBoard = board.getCascade(displayedCascade-1);
@@ -100,9 +110,14 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
 
   public void go(int rows, int cols){
+    agentA_select = false;
+    agentB_select = false;
+    selecting = false;
+    selection = new int[]{-1,-1,-1,-1};
     layout = new GridLayout(rows,cols,3,3);
     boardButtons = new JButton[rows][cols];
     boardPanel = new JPanel(layout);
+
     this.setLayout(new BorderLayout());
 
     for(int i=0;i<rows;i++) {
@@ -119,6 +134,9 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
             boardButtons[i][j].setBorderPainted(false);
         }
     }
+
+    displayedBoard.updateAgentSelection(0,selection);
+    displayedBoard.updateAgentSelection(1,selection);
     this.add(makeToolbar(),BorderLayout.PAGE_START);
     this.add(boardPanel,BorderLayout.CENTER);
     // this.add(nameLabel,BorderLayout.PAGE_END);
@@ -128,8 +146,8 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
   public JToolBar makeToolbar(){
     nameLabel = new JLabel("Null");
-    JToolBar toolBar = new JToolBar();
-    JButton addCascade, removeCascade, next, prev, agent0, agent1, highlight;
+    toolBar = new JToolBar();
+    // JButton addCascade, removeCascade, next, prev, agent0, agent1, highlight;
     addCascade = new JButton("Add Cascade");
     removeCascade = new JButton("Remove Cascade");
     next = new JButton("Next");
@@ -194,7 +212,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
   // handle button presses
   public void actionPerformed(ActionEvent e) {
-      System.out.println(e.getActionCommand());
+      System.out.println("Processing Command: " + e.getActionCommand());
       switch(e.getActionCommand()) {
           case "Add Cascade":
               addCascade();
@@ -203,8 +221,16 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
               removeCascade();
               break;
           case "Agent 0":
+              if(!agentB_select && !agentA_select){
+                agentA_select = true;
+                agent0.setBackground(SELECTED_COLOR);
+              }
               break;
           case "Agent 1":
+              if(!agentA_select && !agentB_select){
+                agentB_select = true;
+                agent1.setBackground(SELECTED_COLOR);
+              }
               break;
           case "Highlight":
               break;
@@ -224,15 +250,52 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   }
 
   public void handleClick(int row,int col) {
-    displayedBoard.cycleValues(row, col);
+    if(!agentA_select && !agentB_select){
+      displayedBoard.cycleValues(row, col);
+    } else {
+      if(!selecting){
+        selection[0] = row;
+        selection[1] = col;
+        selecting = true;
+      } else {
+        selection[2] = row;
+        selection[3] = col;
+        if(agentA_select){
+          displayedBoard.updateAgentSelection(0, selection);
+        } else if (agentB_select){
+          displayedBoard.updateAgentSelection(1, selection);
+        }
+        selecting = false;
+        agentA_select = false;
+        agentB_select = false;
+      }
+      // printSelection(selection);
+    }
+  }
+
+  private void printSelection(int[] toPrint){
+    System.out.print("\n[");
+    for (int i = 0; i < toPrint.length; i++){
+      System.out.print(toPrint[i]);
+      if(i < toPrint.length - 1){
+        System.out.print(", ");
+      }
+    }
+    System.out.print("]\n");
   }
 
   public void update(){
+    // printSelection(selection);
     for(int i=0; i<numRows; i++) {
         for(int j=0; j<numCols; j++) {
           int value = displayedBoard.getValueAt(i,j);
             boardButtons[i][j].setText(CELL_LABELS[value]);
             boardButtons[i][j].setBackground(PIECE_COLORS[value]);
+            if(displayedBoard.isHighlighted(i,j) == 0){
+              boardButtons[i][j].setBackground(Color.blue);
+              // boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.blue, 5));
+              System.out.println("Highlighting " + i + ", " + j);
+            }
         }
     }
   }
