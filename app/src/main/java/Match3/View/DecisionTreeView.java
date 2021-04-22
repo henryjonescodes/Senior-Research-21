@@ -42,7 +42,9 @@ public class DecisionTreeView extends JPanel implements ActionListener
     numMoves = tree.getNumMoves();
     this.setBorder(BorderFactory.createLineBorder(Color.black));
 
-    dt = new DecisionTree(numMoves);
+    // dt = new DecisionTree(numMoves);
+
+    dt = tree;
 
     stateNames = dt.getStateNames();
     gameStates = dt.getGameStates();

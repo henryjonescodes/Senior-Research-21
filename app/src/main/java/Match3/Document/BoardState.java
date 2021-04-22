@@ -17,6 +17,9 @@ public class BoardState implements Serializable
   int numRandomRows;
   int[][] board;
   private String name;
+  private int[] agentA = new int[4];
+  private int[] agentB = new int[4];;
+
 
   private Vector<BoardState> cascades;
 
@@ -73,6 +76,80 @@ public class BoardState implements Serializable
       return numcols;
   }
 
+  public boolean updateAgentSelection(int agentID, int[] position){
+    printSelection(position);
+    if(agentID != 0 && agentID != 1){
+      System.out.println("Agent ID Invalid");
+      return false;
+    }
+    else if(position.length != 4) {
+      System.out.println("Position Invalid");
+      return false;
+    }
+    System.out.println("Updating Agent: " + agentID);
+    if(agentID == 0){
+      agentA = position;
+    } else if(agentID == 1){
+      agentB = position;
+    }
+    printSelection(position);
+    notifyListeners();
+    return true;
+  }
+
+  public int isHighlighted(int row, int col){
+    if(searchInSelection(row, col, agentA)){
+      System.out.println("returning 0");
+      return 0;
+    } else if(searchInSelection(row, col, agentB)){
+      return 1;
+    } else {
+      return -1;
+    }
+  }
+
+  public boolean searchInSelection(int row, int col, int[] selection){
+    // printSelection(selection);
+    int upperBound, lowerBound;
+    if(selection[0] == -1 || selection[1] == -1 || selection[2] == -1 || selection[3] == -1 ){
+      // System.out.println("no selection");
+      return false;
+    }
+    else if(selection[0] == selection[2]){
+      // System.out.println("Same Row");
+      upperBound = Math.max(selection[1], selection[3]);
+      lowerBound = Math.min(selection[1], selection[3]);
+      for(int i = lowerBound; i <= upperBound; i++){
+        if(row == selection[0] && col == i){
+          return true;
+        }
+      }
+    }
+    else if (selection[1] == selection[3]){
+      // System.out.println("Same Col");
+
+      upperBound = Math.max(selection[0], selection[2]);
+      lowerBound = Math.min(selection[0], selection[2]);
+      for(int i = lowerBound; i <= upperBound; i++){
+        if(row == i && col == selection[1]){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private void printSelection(int[] toPrint){
+    System.out.print("\n[");
+    for (int i = 0; i < toPrint.length; i++){
+      System.out.print(toPrint[i]);
+      if(i < toPrint.length - 1){
+        System.out.print(", ");
+      }
+    }
+    System.out.print("]\n");
+  }
+
   public void cycleValues(int row, int col){
     int current = getValueAt(row,col);
     if(current == BoardMaker.NUM_VALUES-1){
@@ -117,7 +194,7 @@ public class BoardState implements Serializable
 
   public String toString(){
     StringBuilder SB = new StringBuilder();
-    SB.append("========Board Start =======\n");
+    SB.append("======== "+ name + " =======\n");
     for(int i=0;i < numrows; i++) {
         for(int j=0;j < numcols; j++) {
           SB.append(BoardMaker.CELL_LABELS[board[i][j]]);
