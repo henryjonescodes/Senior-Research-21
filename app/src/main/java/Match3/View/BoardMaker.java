@@ -185,13 +185,13 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   private void addCascade(){
     rootBoard.addCascade();
     displayedCascade += 1;
-    System.out.println("trying to update");
+    // System.out.println("trying to update");
     updateState(rootBoard, displayedCascade);
   }
 
   private void removeCascade(){
     displayedCascade -=1;
-    System.out.println("trying to delete");
+    // System.out.println("trying to delete");
     updateState(rootBoard, displayedCascade);
     rootBoard.removeLastCascade();
   }
@@ -291,11 +291,11 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
           int value = displayedBoard.getValueAt(i,j);
             boardButtons[i][j].setText(CELL_LABELS[value]);
             boardButtons[i][j].setBackground(PIECE_COLORS[value]);
-            if(displayedBoard.isHighlighted(i,j) == 0){
-              boardButtons[i][j].setBackground(Color.blue);
-              // boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.blue, 5));
-              System.out.println("Highlighting " + i + ", " + j);
-            }
+            // if(displayedBoard.isHighlighted(i,j) == 0){
+            //   boardButtons[i][j].setBackground(Color.blue);
+            //   // boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.blue, 5));
+            //   System.out.println("Highlighting " + i + ", " + j);
+            // }
         }
     }
   }

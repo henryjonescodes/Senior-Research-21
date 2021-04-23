@@ -1,6 +1,7 @@
 package Match3.Document;
 
 import Match3.View.*;
+import Match3.IO.IO_Format;
 import Match3.Listeners.*;
 import java.util.*;
 import java.io.*;
@@ -10,6 +11,9 @@ import java.io.*;
 // underlying game engine for Match3
 public class BoardState implements Serializable
 {
+  //
+  // private String BOARD_HEADER = "#B:";
+  // private String BOARD_FOOTER = "$B:";
 
   final boolean verbose = false;
   private Vector<BoardStateListener> listeners;
@@ -170,7 +174,7 @@ public class BoardState implements Serializable
   }
 
   public void addCascade(){
-    System.out.println("trying to make board state: " + name + "~" + String.valueOf(1));
+    // System.out.println("trying to make board state: " + name + "~" + String.valueOf(1));
     BoardState temp;
     if(numCascades() == 0){
       temp = new BoardState(this, name + "~" + String.valueOf(numCascades()+1));
@@ -194,17 +198,23 @@ public class BoardState implements Serializable
 
   public String toString(){
     StringBuilder SB = new StringBuilder();
-    SB.append("======== "+ name + " =======\n");
+    SB.append(IO_Format.BOARD_HEADER + "\n");
+    SB.append(name + "\n");
     for(int i=0;i < numrows; i++) {
         for(int j=0;j < numcols; j++) {
           SB.append(BoardMaker.CELL_LABELS[board[i][j]]);
           if(j < numcols - 1){
-            SB.append(" | ");
+            SB.append("|");
           }
         }
-        SB.append("\n");
+        if(i< numrows -1){
+            SB.append("\n");
+        }
     }
-    SB.append("========Board End =========\n");
+    // SB.append(IO_Format.BOARD_FOOTER);
+    for(BoardState bs : cascades){
+      SB.append("\n"+bs.toString());
+    }
     return SB.toString();
   }
 

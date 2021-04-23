@@ -44,6 +44,8 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
     dtv = new DecisionTreeView(dt);
     bm.updateState(dt.getInitialState(), 0);
 
+    System.out.println(dt.toString());
+
     io_manager = new GameIO();
 
 
@@ -121,7 +123,7 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
       fileToSave = fileChooser.getSelectedFile();
     }
 
-    File renamedFile = new File(fileToSave.getAbsolutePath() + ".ser");
+    File renamedFile = new File(fileToSave.getAbsolutePath() + ".txt");
 
     // System.out.println("Save as file: " + fileToSave.getAbsolutePath());
     return renamedFile;
@@ -169,7 +171,8 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
               if(saveLoc.toString() == ""){
                 break;
               } else {
-                io_manager.exportState(dt, saveLoc);
+                // io_manager.exportState(dt, saveLoc);
+                io_manager.writeToFile(dt.toString(), saveLoc);
                 break;
               }
           case "Load":
@@ -177,8 +180,10 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
               if(loadLoc.toString() == ""){
                 break;
               } else {
-                DecisionTree importedTree = io_manager.importState(loadLoc);
-                loadFromImported(importedTree);
+                // DecisionTree importedTree = io_manager.importState(loadLoc);
+                // loadFromImported(importedTree);
+                // break;
+                io_manager.readFromFile(loadLoc);
                 break;
               }
           default:

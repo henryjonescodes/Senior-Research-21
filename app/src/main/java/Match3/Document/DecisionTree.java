@@ -5,17 +5,28 @@ package Match3.Document;
 
 import Match3.Listeners.*;
 import Match3.Document.*;
+import Match3.IO.IO_Format;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
+
+
+
 // import static Match3.Settings.*;
 
 public class DecisionTree implements Serializable
 {
+
+  // private final String BOARD_HEADER = "#B:";
+  // private final String BOARD_FOOTER = "$B:";
+  // private final String BOARD_SEPPARATOR = "\n~\n";
+  // private final String TREE_HEADER = "#T:";
+  // private final String TREE_FOOTER = "$T:";
   private final int NUM_ROWS = 7;
   private final int NUM_COLS = 7;
+
   private int numMoves;
   private Map<Integer, Vector<String>> stateNames;
   private Map<Integer, Vector<BoardState>> gameStates;
@@ -101,5 +112,23 @@ public class DecisionTree implements Serializable
       }
     }
     return names;
+  }
+
+  public String toString(){
+    StringBuilder SB = new StringBuilder();
+    //Output in format:
+    //#T:
+    //rows,cols,moves
+    SB.append(IO_Format.TREE_HEADER + "\n" + NUM_ROWS + "," + NUM_COLS + "," + numMoves);
+    // SB.append("\n" + IO_Format.MOVE_SEPPARATOR);
+    for(int move: gameStates.keySet()){
+      for(int index = 0; index < gameStates.get(move).size(); index++){
+        SB.append("\n" + gameStates.get(move).elementAt(index).toString());
+        // SB.append("\n" + IO_Format.BOARD_SEPPARATOR);
+      }
+      SB.append("\n" + IO_Format.MOVE_SEPPARATOR);
+    }
+    SB.append("\n" + IO_Format.TREE_FOOTER);
+    return SB.toString();
   }
 }
