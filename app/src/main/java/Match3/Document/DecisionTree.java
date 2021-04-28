@@ -94,6 +94,10 @@ public class DecisionTree implements Serializable
     return gameStates;
   }
 
+  public void importGameStates(Map<Integer, Vector<BoardState>> states){
+    gameStates = states;
+  }
+
   public int numStates(){
     int total = 0;
     for(int move: stateNames.keySet()){

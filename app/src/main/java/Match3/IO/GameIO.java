@@ -50,14 +50,26 @@ public class GameIO {
     // Write the content in file
     try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(location.getAbsolutePath()))) {
         bufferedWriter.write(toWrite);
+        System.out.println("Saved:  " + location.getAbsolutePath());
     } catch (IOException e) {
         // Exception handling
     }
   }
 
+  private int[] getHighlightValues(String line){
+      int[] out = new int[4];
+      out[0] = Character.getNumericValue(line.charAt(0));
+      out[1] = Character.getNumericValue(line.charAt(2));
+      out[2] = Character.getNumericValue(line.charAt(4));
+      out[3] = Character.getNumericValue(line.charAt(6));
+      return out;
+  }
+
   public String readFromFile(File location){
     Map<String, int[][]> decoded = new HashMap<String, int[][]>();
     Map<Integer, Vector<String>> names = new HashMap<Integer, Vector<String>>();
+    Map<String, Vector<int[]>> highlights = new HashMap<String, Vector<int[]>>();
+
 
     boolean readingBoardLines = false;
     boolean readingBoard = false;
@@ -94,9 +106,33 @@ public class GameIO {
               lineOfNames.add(boardName);
               System.out.println(line);
 
+              //Advance to Agent A data
+              line = bufferedReader.readLine();
+              line = bufferedReader.readLine();
+              int[] agentA = getHighlightValues(line);
+
+              //Advance to Agent B data
+              line = bufferedReader.readLine();
+              line = bufferedReader.readLine();
+              int[] agentB = getHighlightValues(line);
+
+              //Advance to highlight data
+              line = bufferedReader.readLine();
+              line = bufferedReader.readLine();
+              int[] highLight = getHighlightValues(line);
+
+              Vector<int[]> theseHighlights = new Vector<int[]>();
+
+              theseHighlights.add(agentA);
+              theseHighlights.add(agentB);
+              theseHighlights.add(highLight);
+
+              highlights.put(boardName,theseHighlights);
+
               //Reading board, advance to start
               readingBoard = true;
               line = bufferedReader.readLine();
+
             }
             else if(readingBoard){
               int[][] thisBoard = new int[numRows][numCols];
@@ -130,4 +166,22 @@ public class GameIO {
     }
     return null;
   }
+
+
+//   private DecisionTree rebuildTree(Map<Integer, Vector<String>> names,
+//                                    Map<String, int[][]> decodedBoards,
+//                                    Map<String, Vector<int[]>> highlights,
+//                                    int numRows, int numCols, int numMoves){
+//
+//       Hashmap<Integer, Vector<BoardState>> boardMap = Map<Integer, Vector<BoardState>>();
+//       DecisionTree dt = new DecisionTree(numMoves);
+//       dt.generateBlankTree();
+//       int currentMove = 0;
+//       for(int move = 1; move <= numMoves; move += 1)
+//       for(String name :dt.getStateNames.get(move)){
+//         BoardState
+//       }
+//
+//
+//   }
 }
