@@ -90,6 +90,14 @@ public class DecisionTree implements Serializable
     return states;
   }
 
+  public void importFromMap(Map<Integer, Vector<BoardState>> states){
+    gameStates = states;
+  }
+
+  public int getNumBoardsAtMove(int move){
+    return gameStates.get(move).size();
+  }
+
   public Map<Integer, Vector<BoardState>> getGameStates(){
     return gameStates;
   }

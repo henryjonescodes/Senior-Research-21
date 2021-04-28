@@ -16,5 +16,6 @@ public final class IO_Format{
   public static final String HIGHLIGHT = "#Highlight:";
   public static final String SCORE_HEADER = "#Score:";
   public static final String NOTIFICATION_HEADER = "#Notification:";
+  public static final String CONTENT_HEADER = "#Content:";
 
 }

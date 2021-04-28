@@ -67,12 +67,13 @@ public class BoardState implements Serializable
     this.numrows = numrows;
     this.numcols = numcols;
     this.name = name;
-    board = new int[numrows][numcols];
-    for(int i=0;i < numrows; i++) {
-        for(int j=0;j < numcols; j++) {
-            board[i][j] = contents[i][j];
-        }
-    }
+    board = contents;
+    // board = new int[numrows][numcols];
+    // for(int i=0;i < numrows; i++) {
+    //     for(int j=0;j < numcols; j++) {
+    //         board[i][j] = contents[i][j];
+    //     }
+    // }
     go();
   }
 
@@ -106,8 +107,8 @@ public class BoardState implements Serializable
   }
 
   public boolean updateAgentSelection(int agentID, int[] position){
-    printSelection(position);
-    if(agentID != 0 && agentID != 1){
+    // printSelection(position);
+    if(agentID != 0 && agentID != 1 && agentID != 2){
       System.out.println("Agent ID Invalid");
       return false;
     }
@@ -115,13 +116,15 @@ public class BoardState implements Serializable
       System.out.println("Position Invalid");
       return false;
     }
-    System.out.println("Updating Agent: " + agentID);
+    // System.out.println("Updating Agent: " + agentID);
     if(agentID == 0){
       agentA = position;
     } else if(agentID == 1){
       agentB = position;
+    } else if(agentID == 2){
+      highLight = position;
     }
-    printSelection(position);
+    // printSelection(position);
     notifyListeners();
     return true;
   }
@@ -231,6 +234,7 @@ public class BoardState implements Serializable
     SB.append(formatArray(agentB, 4)+ "\n");
     SB.append(IO_Format.HIGHLIGHT + "\n");
     SB.append(formatArray(highLight, 4) + "\n");
+    SB.append(IO_Format.CONTENT_HEADER + "\n");
 
     for(int i=0;i < numrows; i++) {
         for(int j=0;j < numcols; j++) {
@@ -244,6 +248,8 @@ public class BoardState implements Serializable
             SB.append("\n");
         }
     }
+    SB.append("\n" + IO_Format.BOARD_FOOTER);
+
     // SB.append(IO_Format.BOARD_FOOTER);
     for(BoardState bs : cascades){
       SB.append("\n"+bs.toString());

@@ -65,7 +65,7 @@ public class GameIO {
       return out;
   }
 
-  public String readFromFile(File location){
+  public void readFromFile(File location){
     Map<String, int[][]> decoded = new HashMap<String, int[][]>();
     Map<Integer, Vector<String>> names = new HashMap<Integer, Vector<String>>();
     Map<String, Vector<int[]>> highlights = new HashMap<String, Vector<int[]>>();
@@ -80,108 +80,227 @@ public class GameIO {
     int numMoves = 0;
     int numRows = 0;
     int numCols = 0;
+
+    //Initialize structs for board data
+    int[] agentA = new int[4];
+    int[] agentB = new int[4];
+    int[] highLight = new int[4];
+    Vector<int[]> theseHighlights = new Vector<int[]>();
+    int score = 0;
+    int notification = 0;
+
     // Read the content from file
     try(BufferedReader bufferedReader = new BufferedReader(new FileReader(location.getAbsolutePath()))) {
         String line = bufferedReader.readLine();
         Vector<String> lineOfNames = new Vector<>();
         while(line != null) {
-            // System.out.println(line);
-            //Get metadata from save file
-            if(line.equals(IO_Format.TREE_HEADER)){
-              //Advance to the info line
-              line = bufferedReader.readLine();
-              System.out.println(line);
-
-              //Read integers from data line
-              numRows = Character.getNumericValue(line.charAt(0));
-              numCols = Character.getNumericValue(line.charAt(2));
-              numMoves = Character.getNumericValue(line.charAt(4));
-              System.out.println("Recovered Rows: " + numRows + " Cols: " + numCols + " Moves" + numMoves);
-              line = bufferedReader.readLine();
-            }
-            else if(line.equals(IO_Format.BOARD_HEADER)){
-              //Advance to the neme line
-              line = bufferedReader.readLine();
-              boardName = line;
-              lineOfNames.add(boardName);
-              System.out.println(line);
-
-              //Advance to Agent A data
-              line = bufferedReader.readLine();
-              line = bufferedReader.readLine();
-              int[] agentA = getHighlightValues(line);
-
-              //Advance to Agent B data
-              line = bufferedReader.readLine();
-              line = bufferedReader.readLine();
-              int[] agentB = getHighlightValues(line);
-
-              //Advance to highlight data
-              line = bufferedReader.readLine();
-              line = bufferedReader.readLine();
-              int[] highLight = getHighlightValues(line);
-
-              Vector<int[]> theseHighlights = new Vector<int[]>();
-
-              theseHighlights.add(agentA);
-              theseHighlights.add(agentB);
-              theseHighlights.add(highLight);
-
-              highlights.put(boardName,theseHighlights);
-
-              //Reading board, advance to start
-              readingBoard = true;
-              line = bufferedReader.readLine();
-
-            }
-            else if(readingBoard){
-              int[][] thisBoard = new int[numRows][numCols];
-              for(int i = 0; i < numRows; i++){
-                int colIndex = 0;
-                for(int j = 0; j < numCols + (numCols - 1); j += 2){
-                  thisBoard[i][colIndex] = Character.getNumericValue(line.charAt(j));
-                  colIndex += 1;
-                }
+          if(!readingBoard){
+              if(line.equals(IO_Format.TREE_HEADER)){
+                //Advance to the info line
+                line = bufferedReader.readLine();
                 System.out.println(line);
+
+                //Read integers from data line
+                numRows = Character.getNumericValue(line.charAt(0));
+                numCols = Character.getNumericValue(line.charAt(2));
+                numMoves = Character.getNumericValue(line.charAt(4));
+
+                //Trace
+                System.out.println("Recovered Rows: " + numRows + " Cols: " + numCols + " Moves: " + numMoves);
+
+                //Advance
                 line = bufferedReader.readLine();
               }
-              decoded.put(boardName, thisBoard);
-              readingBoard = false;
-            }
-            //Read each move
-            else if(line.equals(IO_Format.MOVE_SEPPARATOR)){
-              names.put(currentMove, lineOfNames);
-              currentMove += 1;
-              line = bufferedReader.readLine();
-            }
-            else if(line.equals(IO_Format.TREE_FOOTER)){
-              System.out.println("Done Reading from file " + location.getAbsolutePath());
-              line = bufferedReader.readLine();
-            }
-        }
+              else if(line.equals(IO_Format.BOARD_HEADER)){
+                //Advance to the neme line
+                line = bufferedReader.readLine();
+                // line = bufferedReader.readLine();
+                boardName = line;
+                lineOfNames.add(boardName);
+
+                //re-Initialize structs for this boards data
+                agentA = new int[4];
+                agentB = new int[4];
+                highLight = new int[4];
+                theseHighlights = new Vector<int[]>();
+                score = 0;
+                notification = 0;
+
+                //Trace
+                System.out.println("Recovered Name: " + boardName);
+
+                //Advance
+                line = bufferedReader.readLine();
+              }
+              else if(line.equals(IO_Format.AGENT_A)){
+                line = bufferedReader.readLine();
+                // System.out.println("Attempting AgentA: " + line);
+
+                agentA = getHighlightValues(line);
+
+                System.out.println("Recovered AgentA: " + line);
+
+                //Advance
+                line = bufferedReader.readLine();
+              }
+              else if(line.equals(IO_Format.AGENT_B)){
+                line = bufferedReader.readLine();
+                // System.out.println("Attempting AgentB: " + line);
+
+                agentB = getHighlightValues(line);
+
+                System.out.println("Recovered AgentB: " + line);
+
+                //Advance
+                line = bufferedReader.readLine();
+              }
+              else if(line.equals(IO_Format.HIGHLIGHT)){
+                line = bufferedReader.readLine();
+                // System.out.println("Attempting highLight: " + line);
+
+                highLight = getHighlightValues(line);
+
+                System.out.println("Recovered highLight: " + line);
+
+                //Advance
+                line = bufferedReader.readLine();
+              }
+              else if(line.equals(IO_Format.SCORE_HEADER)){
+                line = bufferedReader.readLine();
+                score = Integer.parseInt(line);
+
+                System.out.println("Recovered Score: " + score);
+
+                //Advance
+                line = bufferedReader.readLine();
+              }
+              else if(line.equals(IO_Format.NOTIFICATION_HEADER)){
+                line = bufferedReader.readLine();
+                notification = Integer.parseInt(line);
+
+                System.out.println("Recovered notification: " + notification);
+
+                //Advance
+                line = bufferedReader.readLine();
+              }
+              else if(line.equals(IO_Format.BOARD_FOOTER)){
+                //Save highlights
+                theseHighlights.add(agentA);
+                theseHighlights.add(agentB);
+                theseHighlights.add(highLight);
+                highlights.put(boardName,theseHighlights);
+                readingBoard = false;
+
+                System.out.println("Finished Reading Board: " + boardName);
+
+                //Advance
+                line = bufferedReader.readLine();
+              }
+              else if(line.equals(IO_Format.MOVE_SEPPARATOR)){
+                names.put(currentMove, lineOfNames);
+                currentMove += 1;
+
+                //Advance
+                line = bufferedReader.readLine();
+              }
+              else if(line.equals(IO_Format.TREE_FOOTER)){
+                System.out.println("Done Reading from file " + location.getAbsolutePath());
+                break;
+              }
+              else if(line.equals(IO_Format.CONTENT_HEADER)){
+                readingBoard = true;
+                //Advance
+                line = bufferedReader.readLine();
+              }
+              else{
+                System.out.println("No Tag Found: " + line);
+                //Advance
+                line = bufferedReader.readLine();
+              }
+           }
+           //if readingBoard
+           else {
+             //Read the board into a 2-D array
+             int[][] thisBoard = new int[numRows][numCols];
+             for(int i = 0; i < numRows; i++){
+               int colIndex = 0;
+               for(int j = 0; j < numCols + (numCols - 1); j += 2){
+                 thisBoard[i][colIndex] = Character.getNumericValue(line.charAt(j));
+                 colIndex += 1;
+               }
+               System.out.println(line);
+               line = bufferedReader.readLine();
+             }
+             decoded.put(boardName, thisBoard);
+             readingBoard = false;
+           }
+      }
     } catch (FileNotFoundException e) {
         // Exception handling
     } catch (IOException e) {
         // Exception handling
     }
-    return null;
+    for(String key : decoded.keySet()){
+        System.out.print(key + "\n");
+         for(int i = 0; i < numRows; i++){
+              for(int j = 0; j < numCols; j++){
+                System.out.print(decoded.get(key)[i][j]);
+              }
+              System.out.print("\n");
+            }
+
+    }
+    rebuildTree(names, decoded, highlights,numRows,numCols,numMoves);
   }
 
 
-//   private DecisionTree rebuildTree(Map<Integer, Vector<String>> names,
-//                                    Map<String, int[][]> decodedBoards,
-//                                    Map<String, Vector<int[]>> highlights,
-//                                    int numRows, int numCols, int numMoves){
-//
-//       Hashmap<Integer, Vector<BoardState>> boardMap = Map<Integer, Vector<BoardState>>();
-//       DecisionTree dt = new DecisionTree(numMoves);
-//       dt.generateBlankTree();
-//       int currentMove = 0;
-//       for(int move = 1; move <= numMoves; move += 1)
-//       for(String name :dt.getStateNames.get(move)){
-//         BoardState
-//       }
-//
-//
-//   }
+  private void rebuildTree(Map<Integer, Vector<String>> names,
+                                   Map<String, int[][]> decodedBoards,
+                                   Map<String, Vector<int[]>> highlights,
+                                   int numRows, int numCols, int numMoves){
+
+      Map<Integer, Vector<BoardState>> boardMap = new HashMap<Integer, Vector<BoardState>>();
+      DecisionTree dt = new DecisionTree(numMoves);
+      dt.generateBlankTree();
+      int currentMove = 1;
+
+      //Iterate through each move (each layer in the tree)
+      for(int move = 1; move < numMoves; move += 1){
+        System.out.println("Rebuilding move: " + move);
+        //Create storage for resulting states
+        Vector<BoardState> stateVec = new Vector<BoardState>();
+
+        //Fill in the right amount of root boards (and their cascades)
+        int numRootBoards = dt.getNumBoardsAtMove(move);
+
+        BoardState root;
+        int i = 0;
+        int boardCount = 0;
+        while(i < names.get(move).size()){
+          String thisName = names.get(move).elementAt(i);
+          //IF this is a root board
+          if(!thisName.contains("~")){
+            root = new BoardState(decodedBoards.get(thisName),thisName,numRows,numCols);
+            root.updateAgentSelection(0,highlights.get(thisName).elementAt(0));
+            root.updateAgentSelection(1,highlights.get(thisName).elementAt(1));
+            root.updateAgentSelection(2,highlights.get(thisName).elementAt(2));
+            stateVec.add(root);
+            boardCount += 1;
+          }
+          //If this is NOT a root board
+          else {
+            BoardState thisBoard = new BoardState(decodedBoards.get(thisName),thisName,numRows,numCols);
+            thisBoard.updateAgentSelection(0,highlights.get(thisName).elementAt(0));
+            thisBoard.updateAgentSelection(1,highlights.get(thisName).elementAt(1));
+            thisBoard.updateAgentSelection(2,highlights.get(thisName).elementAt(2));
+            stateVec.get(boardCount-1).loadCascade(thisBoard);
+          }
+          i++;
+        }
+        boardMap.put(move, stateVec);
+      }
+      dt.importFromMap(boardMap);
+      System.out.println(dt);
+
+  }
 }
