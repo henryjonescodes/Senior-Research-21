@@ -51,6 +51,17 @@ public class DecisionTree implements Serializable
     return gameStates.get(1).elementAt(0);
   }
 
+  public void copyBoard(BoardState copy, String paste){
+    for(int move : gameStates.keySet()){
+      for(int index = 0; index < gameStates.get(move).size(); index ++){
+        if(gameStates.get(move).elementAt(index).getName() == paste){
+          gameStates.get(move).set(index, new BoardState(copy,paste));
+        }
+      }
+    }
+  }
+
+
   public Map<Integer, Vector<String>> generateTree(){
     Map<Integer, Vector<String>> tempMap = new HashMap<Integer, Vector<String>>();
     Vector<String> firstMove = new Vector<String>();
@@ -90,8 +101,17 @@ public class DecisionTree implements Serializable
     return states;
   }
 
-  public void importFromMap(Map<Integer, Vector<BoardState>> states){
+  public void importFromMap(Map<Integer, Vector<BoardState>> states, Map<Integer, Vector<String>> names){
     gameStates = states;
+    stateNames = names;
+    for(int move: names.keySet()){
+      System.out.println("Move: " + move);
+      for(int i = 0; i < names.get(move).size(); i++){
+        System.out.println(names.get(move).elementAt(i));
+      }
+    }
+
+    // generateBlankTree();
   }
 
   public int getNumBoardsAtMove(int move){

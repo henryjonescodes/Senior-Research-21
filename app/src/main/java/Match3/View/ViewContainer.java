@@ -44,7 +44,7 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
     dtv = new DecisionTreeView(dt);
     bm.updateState(dt.getInitialState(), 0);
 
-    System.out.println(dt.toString());
+    // System.out.println(dt.toString());
 
     io_manager = new GameIO();
 
@@ -86,9 +86,19 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
     this.remove(bm);
     // bm = null;
     // bm = new BoardMaker(state);
+    // System.out.println(state);
     bm.updateState(state, 0);
     this.add(bm,BorderLayout.PAGE_START);
     update();
+  }
+
+  public void copyBoard(BoardState destination){
+    System.out.println("Copying from: ");
+    System.out.println(bm.getCurrentBoard());
+    System.out.println("Copying to: ");
+    System.out.println(destination);
+
+    dt.copyBoard(bm.getCurrentBoard(), destination.getName());
   }
 
   /**
@@ -103,15 +113,19 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
 
   private void loadFromImported(DecisionTree imported){
     this.remove(scroller);
+    this.remove(bm);
+    bm = new BoardMaker();
     dt = imported;
     dtv = new DecisionTreeView(dt);
     dtv.addListener(this);
     bm.updateState(dt.getInitialState(), 0);
     scroller = new JScrollPane(dtv,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+    this.add(bm,BorderLayout.PAGE_START);
     this.add(scroller,BorderLayout.CENTER);
     System.out.println(dt.getGameStates().get(1).elementAt(0).toString());
-
-  }
+    update();
+    }
 
   public File getSaveLocation(){
     fileChooser.addChoosableFileFilter(new IO_Filter());
@@ -183,7 +197,8 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
                 // DecisionTree importedTree = io_manager.importState(loadLoc);
                 // loadFromImported(importedTree);
                 // break;
-                io_manager.readFromFile(loadLoc);
+                DecisionTree importedTree = io_manager.readFromFile(loadLoc);
+                loadFromImported(importedTree);
                 break;
               }
           default:
