@@ -24,7 +24,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   public static final Dimension BOARD_SIZE = new Dimension(500,500);
   public static final Color DESELECTED_COLOR = Color.LIGHT_GRAY;
   public static final Color SELECTED_COLOR = Color.RED;
-  public static final Color PIECE_COLORS[] = {Color.LIGHT_GRAY, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK};
+  public static final Color PIECE_COLORS[] = {Color.LIGHT_GRAY, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN, Color.PINK};
   public static final int NUM_VALUES = 6;
   private final int NUM_ROWS = 7;
   private final int NUM_COLS = 7;
@@ -62,7 +62,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     numCols = NUM_COLS;
     numCascades = 0;
     displayedCascade = 0;
-    displayedBoard = new BoardState(numRows,numCols, "unnamed");
+    displayedBoard = new BoardState(numRows,numCols, "unnamed",0,0);
     displayedBoard.addListener(this);
     go(numRows, numCols);
   }
@@ -82,7 +82,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     this.numCols = numCols;
     numCascades = 0;
     displayedCascade = 0;
-    displayedBoard = new BoardState(this.numRows,this.numCols,"unnamed");
+    displayedBoard = new BoardState(this.numRows,this.numCols,"unnamed",0,0);
     displayedBoard.addListener(this);
     go(this.numRows, this.numCols);
   }
@@ -96,7 +96,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
     if(displayedCascade >= 1){
       displayedBoard = board.getCascade(displayedCascade-1);
-      System.out.println("trying to display " + displayedBoard.getName());
+      // System.out.println("trying to display " + displayedBoard.getName());
     } else {
       displayedBoard = board;
     }
@@ -115,6 +115,8 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
 
   public void go(int rows, int cols){
+    scoreLabel = new JLabel("Null");
+    notificationLabel = new JLabel("Null");
     agentA_select = false;
     agentB_select = false;
     selecting = false;
@@ -140,8 +142,9 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
         }
     }
 
-    displayedBoard.updateAgentSelection(0,selection);
-    displayedBoard.updateAgentSelection(1,selection);
+    displayedBoard.updateAgentSelection(0, new int[]{-1,-1,-1,-1});
+    displayedBoard.updateAgentSelection(1, new int[]{-1,-1,-1,-1});
+    displayedBoard.updateAgentSelection(2, new int[]{-1,-1,-1,-1});
     this.add(makeToolbar(),BorderLayout.PAGE_START);
     this.add(boardPanel,BorderLayout.CENTER);
     this.add(makeScoreBar(),BorderLayout.PAGE_END);
@@ -151,8 +154,6 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   }
 
   public JToolBar makeScoreBar(){
-    scoreLabel = new JLabel("Null");
-    notificationLabel = new JLabel("Null");
     scoreBar = new JToolBar();
     scoreUp = new JButton("Score +");
     scoreDown = new JButton("Score -");
@@ -260,17 +261,35 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
                 agentA_select = true;
                 agent0.setForeground(SELECTED_COLOR);
               }
+              else if (agentA_select){
+                selecting = false;
+                agentA_select = false;
+                displayedBoard.updateAgentSelection(0, new int[]{-1,-1,-1,-1});
+                agent0.setForeground(DESELECTED_COLOR);
+              }
               break;
           case "Agent 1":
               if(!agentA_select && !agentB_select && !highlight_select){
                 agentB_select = true;
                 agent1.setForeground(SELECTED_COLOR);
               }
+              else if (agentB_select){
+                selecting = false;
+                agentB_select = false;
+                displayedBoard.updateAgentSelection(1, new int[]{-1,-1,-1,-1});
+                agent1.setForeground(DESELECTED_COLOR);
+              }
               break;
           case "Highlight":
               if(!agentA_select && !agentB_select && !highlight_select){
                 highlight_select = true;
                 highlight.setForeground(SELECTED_COLOR);
+              }
+              else if (highlight_select){
+                selecting = false;
+                highlight_select = false;
+                displayedBoard.updateAgentSelection(2, new int[]{-1,-1,-1,-1});
+                highlight.setForeground(DESELECTED_COLOR);
               }
               break;
           case "Prev":
@@ -279,6 +298,18 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
           case "Next":
               next();
               break;
+          case "Noti +":
+              displayedBoard.setNotification(displayedBoard.getNotification() + 1);
+              break;
+          case "Noti -":
+              displayedBoard.setNotification(displayedBoard.getNotification() - 1);
+              break;
+          case "Score +":
+              displayedBoard.setScore(displayedBoard.getScore() + 1);
+              break;
+          case "Score -":
+              displayedBoard.setScore(Math.max((displayedBoard.getScore() - 1), 0));
+              break;
           default: // board piece
               String[] cmd = e.getActionCommand().split(" ");
               int cmdrow = Integer.parseInt(cmd[0]);
@@ -286,6 +317,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
               handleClick(cmdrow,cmdcol);
               break;
       }
+      update();
   }
 
   public void handleClick(int row,int col) {
@@ -331,22 +363,32 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   }
 
   public void update(){
+    scoreLabel.setText(String.valueOf(displayedBoard.getScore()));
+    notificationLabel.setText(String.valueOf(displayedBoard.getNotification()));
+
     // printSelection(selection);
     for(int i=0; i<numRows; i++) {
         for(int j=0; j<numCols; j++) {
-          int value = displayedBoard.getValueAt(i,j);
+            int value = displayedBoard.getValueAt(i,j);
             boardButtons[i][j].setText(CELL_LABELS[value]);
             boardButtons[i][j].setBackground(PIECE_COLORS[value]);
             int highlightValue = displayedBoard.isHighlighted(i,j);
             if(highlightValue == 0){
-              boardButtons[i][j].setBackground(Color.blue);
+              boardButtons[i][j].setForeground(Color.blue);
+              // boardButtons[i][j].setBorder(BorderFactory.createBevelBorder(1, Color.blue, Color.blue));
               // boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.blue, 5));
             } else if(highlightValue == 1){
-                boardButtons[i][j].setBackground(Color.red);
+                boardButtons[i][j].setForeground(Color.red);
+                // boardButtons[i][j].setBorder(BorderFactory.createBevelBorder(1, Color.red, Color.red));
+
                 // boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.blue, 5));
             } else if(highlightValue == 2){
-                boardButtons[i][j].setBackground(Color.green);
+                boardButtons[i][j].setForeground(Color.white);
+                // boardButtons[i][j].setBorder(BorderFactory.createBevelBorder(1, Color.green,Color.green));
                 // boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.blue, 5));
+            } else {
+              boardButtons[i][j].setForeground(Color.black);
+              // boardButtons[i][j].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
             }
         }
     }

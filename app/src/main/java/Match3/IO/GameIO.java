@@ -69,6 +69,9 @@ public class GameIO {
     Map<String, int[][]> decoded = new HashMap<String, int[][]>();
     Map<Integer, Vector<String>> names = new HashMap<Integer, Vector<String>>();
     Map<String, Vector<int[]>> highlights = new HashMap<String, Vector<int[]>>();
+    Map<String, Integer> scores = new HashMap<String, Integer>();
+    Map<String, Integer> notifications = new HashMap<String, Integer>();
+
 
 
     boolean readingBoardLines = false;
@@ -173,7 +176,9 @@ public class GameIO {
                 line = bufferedReader.readLine();
                 score = Integer.parseInt(line);
 
-                System.out.println("Recovered Score: " + score);
+                scores.put(boardName, score);
+
+                // System.out.println("Recovered Score: " + score);
 
                 //Advance
                 line = bufferedReader.readLine();
@@ -182,7 +187,9 @@ public class GameIO {
                 line = bufferedReader.readLine();
                 notification = Integer.parseInt(line);
 
-                System.out.println("Recovered notification: " + notification);
+                notifications.put(boardName, notification);
+
+                // System.out.println("Recovered notification: " + notification);
 
                 //Advance
                 line = bufferedReader.readLine();
@@ -203,7 +210,7 @@ public class GameIO {
               else if(line.equals(IO_Format.MOVE_SEPPARATOR)){
                 names.put(currentMove, lineOfNames);
                 lineOfNames = new Vector<>();
-                System.out.println("Sepparating Move: " + currentMove + " Names: " + names.get(currentMove).size());
+                // System.out.println("Sepparating Move: " + currentMove + " Names: " + names.get(currentMove).size());
                 currentMove += 1;
 
                 //Advance
@@ -257,35 +264,37 @@ public class GameIO {
     //         }
     //
     // }
-    System.out.println("Number of boards: " + boardCounter);
-    System.out.println("Number of names added: " + numNamesAdded);
-    System.out.println("Number of decoded: " + decoded.size());
-    for(int move: names.keySet()){
-      System.out.println("Move: " + move + " Names: " +  names.get(move).size());
-    }
+    // System.out.println("Number of boards: " + boardCounter);
+    // System.out.println("Number of names added: " + numNamesAdded);
+    // System.out.println("Number of decoded: " + decoded.size());
+    // for(int move: names.keySet()){
+    //   System.out.println("Move: " + move + " Names: " +  names.get(move).size());
+    // }
 
 
-    return rebuildTree(names, decoded, highlights,numRows,numCols,numMoves);
+    return rebuildTree(names, decoded, highlights,numRows,numCols,numMoves,scores,notifications);
   }
 
 
   private DecisionTree rebuildTree(Map<Integer, Vector<String>> names,
                                    Map<String, int[][]> decodedBoards,
                                    Map<String, Vector<int[]>> highlights,
-                                   int numRows, int numCols, int numMoves){
+                                   int numRows, int numCols, int numMoves,
+                                   Map<String, Integer> scores,
+                                   Map<String, Integer> notifications){
 
       Map<Integer, Vector<BoardState>> boardMap = new HashMap<Integer, Vector<BoardState>>();
       Map<Integer, Vector<String>> nameMap = new HashMap<Integer, Vector<String>>();
 
       DecisionTree dt = new DecisionTree(numMoves);
       dt.generateBlankTree();
-      System.out.println("Number of root boards: " + dt.numStates());
+      // System.out.println("Number of root boards: " + dt.numStates());
 
       int currentMove = 1;
 
       //Iterate through each move (each layer in the tree)
       for(int move = 1; move <= numMoves; move += 1){
-        System.out.println("Rebuilding move: " + move);
+        // System.out.println("Rebuilding move: " + move);
         //Create storage for resulting states
         Vector<BoardState> stateVec = new Vector<BoardState>();
         Vector<String> nameVec = new Vector<String>();
@@ -303,9 +312,11 @@ public class GameIO {
           String thisName = names.get(move).elementAt(i);
           //IF this is a root board
           if(!thisName.contains("~")){
-            System.out.println("Adding Root Board: " + thisName);
-            System.out.println("i = " + i);
-            root = new BoardState(decodedBoards.get(thisName),thisName,numRows,numCols);
+            // System.out.println("Adding Root Board: " + thisName);
+            // System.out.println("i = " + i);
+            root = new BoardState(decodedBoards.get(thisName),thisName,numRows,numCols,
+                                  scores.get(thisName),notifications.get(thisName));
+
             root.updateAgentSelection(0,highlights.get(thisName).elementAt(0));
             root.updateAgentSelection(1,highlights.get(thisName).elementAt(1));
             root.updateAgentSelection(2,highlights.get(thisName).elementAt(2));
@@ -315,9 +326,11 @@ public class GameIO {
           }
           //If this is NOT a root board
           else {
-            System.out.println("Adding Non-Root Board: " + thisName);
-            System.out.println("i = " + i);
-            BoardState thisBoard = new BoardState(decodedBoards.get(thisName),thisName,numRows,numCols);
+            // System.out.println("Adding Non-Root Board: " + thisName);
+            // System.out.println("i = " + i);
+            BoardState thisBoard = new BoardState(decodedBoards.get(thisName),thisName,numRows,numCols,
+                                                  scores.get(thisName),notifications.get(thisName));
+
             thisBoard.updateAgentSelection(0,highlights.get(thisName).elementAt(0));
             thisBoard.updateAgentSelection(1,highlights.get(thisName).elementAt(1));
             thisBoard.updateAgentSelection(2,highlights.get(thisName).elementAt(2));
@@ -329,9 +342,9 @@ public class GameIO {
         boardMap.put(move, stateVec);
       }
       dt.importFromMap(boardMap, nameMap);
-      System.out.println("Number of boards: " + dt.numStates());
+      // System.out.println("Number of boards: " + dt.numStates());
 
-      System.out.println(dt);
+      // System.out.println(dt);
       return dt;
 
   }

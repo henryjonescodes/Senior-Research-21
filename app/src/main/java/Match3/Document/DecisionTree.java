@@ -93,7 +93,7 @@ public class DecisionTree implements Serializable
     for(int move: tree.keySet()){
       Vector<BoardState> stateVec = new Vector<BoardState>();
       for(String label: tree.get(move)){
-        BoardState state = new BoardState(rows,cols,label);
+        BoardState state = new BoardState(rows,cols,label,0,0);
         stateVec.add(state);
       }
       states.put(move, stateVec);

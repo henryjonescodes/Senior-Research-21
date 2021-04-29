@@ -93,10 +93,10 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
   }
 
   public void copyBoard(BoardState destination){
-    System.out.println("Copying from: ");
-    System.out.println(bm.getCurrentBoard());
-    System.out.println("Copying to: ");
-    System.out.println(destination);
+    // System.out.println("Copying from: ");
+    // System.out.println(bm.getCurrentBoard());
+    // System.out.println("Copying to: ");
+    // System.out.println(destination);
 
     dt.copyBoard(bm.getCurrentBoard(), destination.getName());
   }

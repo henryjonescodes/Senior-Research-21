@@ -29,15 +29,15 @@ public class BoardState implements Serializable
 
   private Vector<BoardState> cascades;
 
-  public BoardState(int numrows, int numcols, String name)
+  public BoardState(int numrows, int numcols, String name, int score, int notification)
   {
      // super(numrows, numcols);
      // listeners = new Vector<BoardStateListener>();
      this.numrows = numrows;
      this.numcols = numcols;
      this.name = name;
-     // this.score = score;
-     // this.notification = notification;
+     this.score = score;
+     this.notification = notification;
      // cascades = new Vector<BoardState>();
      board = new int[numrows][numcols];
      for(int i=0;i < numrows; i++) {
@@ -54,7 +54,10 @@ public class BoardState implements Serializable
       // listeners = new Vector<BoardStateListener>();
       numrows = oldboard.getNumRows();
       numcols = oldboard.getNumCols();
+      score = oldboard.getScore();
+      notification = oldboard.getNotification();
       this.name = name;
+
       // cascades = new Vector<BoardState>();
       board = new int[numrows][numcols];
       for(int i=0;i < numrows; i++) {
@@ -65,10 +68,12 @@ public class BoardState implements Serializable
       go();
   }
 
-  public BoardState(int[][] contents, String name, int numRows, int numCols){
+  public BoardState(int[][] contents, String name, int numRows, int numCols, int score, int notification){
     this.numrows = numRows;
     this.numcols = numCols;
     this.name = name;
+    this.score = score;
+    this.notification = notification;
     board = contents;
 
     // for(int i = 0; i < numRows; i++){
@@ -87,21 +92,21 @@ public class BoardState implements Serializable
     go();
   }
 
-  // public void setScore(int value){
-  //   score = value;
-  // }
-  //
-  // public void getScore(){
-  //   return score;
-  // }
-  //
-  // public void setNotification(int value){
-  //   notification = value;
-  // }
-  //
-  // public int getNotification(){
-  //   return notification;
-  // }
+  public void setScore(int value){
+    score = value;
+  }
+
+  public int getScore(){
+    return score;
+  }
+
+  public void setNotification(int value){
+    notification = value;
+  }
+
+  public int getNotification(){
+    return notification;
+  }
 
   public void loadCascade(BoardState bs){
     cascades.add(bs);
@@ -147,7 +152,7 @@ public class BoardState implements Serializable
       System.out.println("Position Invalid");
       return false;
     }
-    // System.out.println("Updating Agent: " + agentID);
+    System.out.println("Updating Agent: " + agentID);
     if(agentID == 0){
       System.out.println("Setting A");
       agentA = position.clone();
@@ -158,7 +163,7 @@ public class BoardState implements Serializable
       System.out.println("Setting Highlight");
       highLight = position.clone();
     }
-    // printSelection(position);
+    printSelection(position);
     notifyListeners();
     return true;
   }
@@ -208,7 +213,7 @@ public class BoardState implements Serializable
   }
 
   private void printSelection(int[] toPrint){
-    System.out.print("\n[");
+    System.out.print("[");
     for (int i = 0; i < toPrint.length; i++){
       System.out.print(toPrint[i]);
       if(i < toPrint.length - 1){
@@ -270,6 +275,10 @@ public class BoardState implements Serializable
     SB.append(formatArray(agentB, 4)+ "\n");
     SB.append(IO_Format.HIGHLIGHT + "\n");
     SB.append(formatArray(highLight, 4) + "\n");
+    SB.append(IO_Format.SCORE_HEADER + "\n");
+    SB.append(score + "\n");
+    SB.append(IO_Format.NOTIFICATION_HEADER + "\n");
+    SB.append(score + "\n");
     SB.append(IO_Format.CONTENT_HEADER + "\n");
 
     // for(int i = 0; i < numrows; i++){
