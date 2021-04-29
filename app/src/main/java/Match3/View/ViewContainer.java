@@ -44,6 +44,8 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
     dtv = new DecisionTreeView(dt);
     bm.updateState(dt.getInitialState(), 0);
 
+    // System.out.println(dt.toString());
+
     io_manager = new GameIO();
 
 
@@ -84,9 +86,19 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
     this.remove(bm);
     // bm = null;
     // bm = new BoardMaker(state);
+    // System.out.println(state);
     bm.updateState(state, 0);
     this.add(bm,BorderLayout.PAGE_START);
     update();
+  }
+
+  public void copyBoard(BoardState destination){
+    // System.out.println("Copying from: ");
+    // System.out.println(bm.getCurrentBoard());
+    // System.out.println("Copying to: ");
+    // System.out.println(destination);
+
+    dt.copyBoard(bm.getCurrentBoard(), destination.getName());
   }
 
   /**
@@ -101,15 +113,19 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
 
   private void loadFromImported(DecisionTree imported){
     this.remove(scroller);
+    this.remove(bm);
+    bm = new BoardMaker();
     dt = imported;
     dtv = new DecisionTreeView(dt);
     dtv.addListener(this);
     bm.updateState(dt.getInitialState(), 0);
     scroller = new JScrollPane(dtv,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+    this.add(bm,BorderLayout.PAGE_START);
     this.add(scroller,BorderLayout.CENTER);
     System.out.println(dt.getGameStates().get(1).elementAt(0).toString());
-
-  }
+    update();
+    }
 
   public File getSaveLocation(){
     fileChooser.addChoosableFileFilter(new IO_Filter());
@@ -121,7 +137,7 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
       fileToSave = fileChooser.getSelectedFile();
     }
 
-    File renamedFile = new File(fileToSave.getAbsolutePath() + ".ser");
+    File renamedFile = new File(fileToSave.getAbsolutePath() + ".txt");
 
     // System.out.println("Save as file: " + fileToSave.getAbsolutePath());
     return renamedFile;
@@ -169,7 +185,8 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
               if(saveLoc.toString() == ""){
                 break;
               } else {
-                io_manager.exportState(dt, saveLoc);
+                // io_manager.exportState(dt, saveLoc);
+                io_manager.writeToFile(dt.toString(), saveLoc);
                 break;
               }
           case "Load":
@@ -177,7 +194,10 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
               if(loadLoc.toString() == ""){
                 break;
               } else {
-                DecisionTree importedTree = io_manager.importState(loadLoc);
+                // DecisionTree importedTree = io_manager.importState(loadLoc);
+                // loadFromImported(importedTree);
+                // break;
+                DecisionTree importedTree = io_manager.readFromFile(loadLoc);
                 loadFromImported(importedTree);
                 break;
               }

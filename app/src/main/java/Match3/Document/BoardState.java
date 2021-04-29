@@ -1,6 +1,7 @@
 package Match3.Document;
 
 import Match3.View.*;
+import Match3.IO.IO_Format;
 import Match3.Listeners.*;
 import java.util.*;
 import java.io.*;
@@ -10,50 +11,111 @@ import java.io.*;
 // underlying game engine for Match3
 public class BoardState implements Serializable
 {
+  //
+  // private String BOARD_HEADER = "#B:";
+  // private String BOARD_FOOTER = "$B:";
 
   final boolean verbose = false;
   private Vector<BoardStateListener> listeners;
-  int numrows,numcols;
-  int numRandomRows;
-  int[][] board;
+  private int numrows,numcols;
+  private int numRandomRows;
+  private int score = 0;
+  private int notification = 0;
+  private int[][] board;
   private String name;
   private int[] agentA = new int[4];
   private int[] agentB = new int[4];;
-
+  private int[] highLight = new int[4];;
 
   private Vector<BoardState> cascades;
 
-  public BoardState(int numrows, int numcols, String name)
+  public BoardState(int numrows, int numcols, String name, int score, int notification)
   {
      // super(numrows, numcols);
-     listeners = new Vector<BoardStateListener>();
+     // listeners = new Vector<BoardStateListener>();
      this.numrows = numrows;
      this.numcols = numcols;
      this.name = name;
-     numRandomRows = 0;
-     cascades = new Vector<BoardState>();
+     this.score = score;
+     this.notification = notification;
+     // cascades = new Vector<BoardState>();
      board = new int[numrows][numcols];
      for(int i=0;i < numrows; i++) {
        for(int j=0;j < numcols; j++) {
            board[i][j] = BoardMaker.CELL_EMPTY;
        }
      }
+     go();
   }
 
   // construct a copy of an existing board
   public BoardState(BoardState oldboard, String name) {
       // super(oldboard);
-      listeners = new Vector<BoardStateListener>();
+      // listeners = new Vector<BoardStateListener>();
       numrows = oldboard.getNumRows();
       numcols = oldboard.getNumCols();
+      score = oldboard.getScore();
+      notification = oldboard.getNotification();
       this.name = name;
-      cascades = new Vector<BoardState>();
+
+      // cascades = new Vector<BoardState>();
       board = new int[numrows][numcols];
       for(int i=0;i < numrows; i++) {
           for(int j=0;j < numcols; j++) {
               board[i][j] = oldboard.board[i][j];
           }
       }
+      go();
+  }
+
+  public BoardState(int[][] contents, String name, int numRows, int numCols, int score, int notification){
+    this.numrows = numRows;
+    this.numcols = numCols;
+    this.name = name;
+    this.score = score;
+    this.notification = notification;
+    board = contents;
+
+    // for(int i = 0; i < numRows; i++){
+    //    for(int j = 0; j < numCols; j++){
+    //      System.out.print(board[i][j]);
+    //    }
+    //    System.out.print("\n");
+    //  }
+
+    // board = new int[numrows][numcols];
+    // for(int i=0;i < numrows; i++) {
+    //     for(int j=0;j < numcols; j++) {
+    //         board[i][j] = contents[i][j];
+    //     }
+    // }
+    go();
+  }
+
+  public void setScore(int value){
+    score = value;
+  }
+
+  public int getScore(){
+    return score;
+  }
+
+  public void setNotification(int value){
+    notification = value;
+  }
+
+  public int getNotification(){
+    return notification;
+  }
+
+  public void loadCascade(BoardState bs){
+    cascades.add(bs);
+    notifyListeners();
+  }
+
+  private void go(){
+    listeners = new Vector<BoardStateListener>();
+    cascades = new Vector<BoardState>();
   }
 
   public int getValueAt(int row, int col) {
@@ -68,6 +130,10 @@ public class BoardState implements Serializable
     return name;
   }
 
+  public void setName(String name){
+    this.name = name;
+  }
+
   public int getNumRows() {
       return numrows;
   }
@@ -77,8 +143,8 @@ public class BoardState implements Serializable
   }
 
   public boolean updateAgentSelection(int agentID, int[] position){
-    printSelection(position);
-    if(agentID != 0 && agentID != 1){
+    // printSelection(position);
+    if(agentID != 0 && agentID != 1 && agentID != 2){
       System.out.println("Agent ID Invalid");
       return false;
     }
@@ -88,9 +154,14 @@ public class BoardState implements Serializable
     }
     System.out.println("Updating Agent: " + agentID);
     if(agentID == 0){
-      agentA = position;
+      System.out.println("Setting A");
+      agentA = position.clone();
     } else if(agentID == 1){
-      agentB = position;
+      System.out.println("Setting B");
+      agentB = position.clone();
+    } else if(agentID == 2){
+      System.out.println("Setting Highlight");
+      highLight = position.clone();
     }
     printSelection(position);
     notifyListeners();
@@ -99,10 +170,12 @@ public class BoardState implements Serializable
 
   public int isHighlighted(int row, int col){
     if(searchInSelection(row, col, agentA)){
-      System.out.println("returning 0");
+      // System.out.println("returning 0");
       return 0;
     } else if(searchInSelection(row, col, agentB)){
       return 1;
+    } else if(searchInSelection(row, col, highLight)){
+      return 2;
     } else {
       return -1;
     }
@@ -140,7 +213,7 @@ public class BoardState implements Serializable
   }
 
   private void printSelection(int[] toPrint){
-    System.out.print("\n[");
+    System.out.print("[");
     for (int i = 0; i < toPrint.length; i++){
       System.out.print(toPrint[i]);
       if(i < toPrint.length - 1){
@@ -170,7 +243,7 @@ public class BoardState implements Serializable
   }
 
   public void addCascade(){
-    System.out.println("trying to make board state: " + name + "~" + String.valueOf(1));
+    // System.out.println("trying to make board state: " + name + "~" + String.valueOf(1));
     BoardState temp;
     if(numCascades() == 0){
       temp = new BoardState(this, name + "~" + String.valueOf(numCascades()+1));
@@ -194,19 +267,58 @@ public class BoardState implements Serializable
 
   public String toString(){
     StringBuilder SB = new StringBuilder();
-    SB.append("======== "+ name + " =======\n");
+    SB.append(IO_Format.BOARD_HEADER + "\n");
+    SB.append(name + "\n");
+    SB.append(IO_Format.AGENT_A + "\n");
+    SB.append(formatArray(agentA, 4)+ "\n");
+    SB.append(IO_Format.AGENT_B + "\n");
+    SB.append(formatArray(agentB, 4)+ "\n");
+    SB.append(IO_Format.HIGHLIGHT + "\n");
+    SB.append(formatArray(highLight, 4) + "\n");
+    SB.append(IO_Format.SCORE_HEADER + "\n");
+    SB.append(score + "\n");
+    SB.append(IO_Format.NOTIFICATION_HEADER + "\n");
+    SB.append(score + "\n");
+    SB.append(IO_Format.CONTENT_HEADER + "\n");
+
+    // for(int i = 0; i < numrows; i++){
+    //    for(int j = 0; j < numcols; j++){
+    //      System.out.print(board[i][j]);
+    //    }
+    //    System.out.print("\n");
+    //  }
+
     for(int i=0;i < numrows; i++) {
         for(int j=0;j < numcols; j++) {
-          SB.append(BoardMaker.CELL_LABELS[board[i][j]]);
+          SB.append(board[i][j]);
+          // SB.append(BoardMaker.CELL_LABELS[board[i][j]]);
           if(j < numcols - 1){
-            SB.append(" | ");
+            SB.append("|");
           }
         }
-        SB.append("\n");
+        if(i< numrows -1){
+            SB.append("\n");
+        }
     }
-    SB.append("========Board End =========\n");
+    SB.append("\n" + IO_Format.BOARD_FOOTER);
+
+    // SB.append(IO_Format.BOARD_FOOTER);
+    for(BoardState bs : cascades){
+      SB.append("\n"+bs.toString());
+    }
     return SB.toString();
   }
+
+  private String formatArray(int[] arr, int size){
+    StringBuilder SB = new StringBuilder();
+    for(int i = 0; i < size; i++){
+        SB.append(arr[i]);
+        if(i < size -1){
+          SB.append(",");
+        }
+      }
+      return SB.toString();
+    }
 
   public void addListener(BoardStateListener l)
   {

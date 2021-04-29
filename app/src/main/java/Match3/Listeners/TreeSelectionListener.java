@@ -9,4 +9,5 @@ public interface TreeSelectionListener {
   */
   public void swapBoard(BoardState state);
 
+  public void copyBoard(BoardState copy);
 }

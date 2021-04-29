@@ -18,9 +18,16 @@ public class DecisionTreeView extends JPanel implements ActionListener
   private static final int TREE_SPACING_X = 15;
   private static final Dimension BUTTON_SIZE = new Dimension(70, 40);
 
+  private final Color DESELECTED_COLOR = Color.BLACK;
+  private final Color SELECTED_COLOR = Color.RED;
+
 
   private SpringLayout layout;
   private JPanel buttonPanel;
+  private JButton copyBtn;
+
+  private boolean copyFlag = false;
+  private boolean swapFlag = false;
 
   private DecisionTree dt;
   private int numMoves;
@@ -57,6 +64,12 @@ public class DecisionTreeView extends JPanel implements ActionListener
           *(stateButtons.get(numMoves).size() + 1), TREE_SPACING_Y*(numMoves + 1)));
   }
 
+  public void update(){
+    setVisible(true);
+    revalidate();
+    repaint();
+  }
+
 
   public Map<Integer, Vector<JButton>> generateButtons(Map<Integer, Vector<String>> tree){
     Map<Integer, Vector<JButton>> buttonMap = new HashMap<Integer, Vector<JButton>>();
@@ -86,6 +99,17 @@ public class DecisionTreeView extends JPanel implements ActionListener
               layout.putConstraint(SpringLayout.WEST, buttonVec.elementAt(0),
                     TREE_SPACING_X,
                     SpringLayout.WEST, this);
+              copyBtn = new JButton("Copy");
+              // copyBtn.setActionCommand("Copy");
+              copyBtn.addActionListener(this);
+              copyBtn.setPreferredSize(BUTTON_SIZE);
+              this.add(copyBtn);
+              layout.putConstraint(SpringLayout.NORTH, copyBtn,
+                     TREE_SPACING_Y,
+                     SpringLayout.NORTH, this);
+              layout.putConstraint(SpringLayout.WEST, copyBtn,
+                    TREE_SPACING_X,
+                    SpringLayout.EAST, buttonVec.elementAt(0));
           } else {
             for(int i = 0; i < buttonVec.size(); i++){
               JButton thisBtn = buttonVec.elementAt(i);
@@ -123,13 +147,23 @@ public class DecisionTreeView extends JPanel implements ActionListener
 
   // handle button presses
   public void actionPerformed(ActionEvent e) {
+      System.out.println(e.getActionCommand());
       switch(e.getActionCommand()) {
+          case "Copy":
+              copyFlag = !copyFlag;
+              if(copyFlag){
+                copyBtn.setForeground(SELECTED_COLOR);
+              } else {
+                copyBtn.setForeground(DESELECTED_COLOR);
+              }
+              // update();
+              break;
           default:
-              System.out.println(e.getActionCommand());
               String[] cmd = e.getActionCommand().split(" ");
               int key = Integer.parseInt(cmd[0]);
               int index = Integer.parseInt(cmd[1]);
               stateToSwap = dt.getGameStates().get(key).elementAt(index);
+              swapFlag = true;
               notifyListeners();
               break;
       }
@@ -169,7 +203,14 @@ public class DecisionTreeView extends JPanel implements ActionListener
   private void notifyListeners()
   {
     for (TreeSelectionListener l : listeners) {
-      l.swapBoard(stateToSwap);
+      if(copyFlag){
+        l.copyBoard(stateToSwap);
+        copyBtn.setForeground(DESELECTED_COLOR);
+        copyFlag = false;
+      } else if(swapFlag){
+        l.swapBoard(stateToSwap);
+        swapFlag = false;
+      }
     }
   }
 
