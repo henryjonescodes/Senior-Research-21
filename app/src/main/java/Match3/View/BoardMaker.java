@@ -36,8 +36,11 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   public static final boolean PRINT_ALL_BOARDS = true;
 
   private JButton addCascade, removeCascade, next, prev, agent0, agent1, highlight;
-  private JButton scoreUp, scoreDown, notiUp, notiDown, dropPieces;
+  private JButton scoreUp, scoreDown, notiUp, notiDown, dropPieces, exit;
   private JToolBar toolBar, scoreBar;
+
+  private Vector<ExitListener> listeners;
+  private boolean exitRequested = false;
 
   private boolean agentA_select, agentB_select, highlight_select, selecting;
   private int[] selection = new int[4];
@@ -127,6 +130,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
 
   public void go(int rows, int cols){
+    listeners = new Vector<ExitListener>();
     scoreLabel = new JLabel("Null");
     notificationLabel = new JLabel("Null");
     agentA_select = false;
@@ -169,6 +173,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
   public JToolBar makeScoreBar(){
     scoreBar = new JToolBar();
+    exit = new JButton("Exit");
     dropPieces = new JButton("Drop Pieces");
     scoreUp = new JButton("Score +");
     scoreDown = new JButton("Score -");
@@ -180,6 +185,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     scoreDown.addActionListener(this);
     notiUp.addActionListener(this);
     notiDown.addActionListener(this);
+    exit.addActionListener(this);
 
     scoreBar.addSeparator(new Dimension(10,10));
     scoreBar.add(scoreUp);
@@ -191,6 +197,8 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     scoreBar.add(notiDown);
     scoreBar.addSeparator(new Dimension(10,10));
     scoreBar.add(dropPieces);
+    scoreBar.addSeparator(new Dimension(10,10));
+    scoreBar.add(exit);
 
     scoreBar.setFloatable(false);
 
@@ -329,6 +337,10 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
               break;
           case "Drop Pieces":
               dropPieces();
+              break;
+          case "Exit":
+              exitRequested = true;
+              notifyListeners();
               break;
           default: // board piece
               String[] cmd = e.getActionCommand().split(" ");
@@ -479,6 +491,33 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   @Override
   public void paintComponent(Graphics g) {
         super.paintComponent(g);
+  }
+
+  public void addListener(ExitListener l)
+  {
+    if (! listeners.contains(l)) {
+        listeners.add(l);
+    }
+  }
+
+  /**
+  * removes the specified ToolBarListener
+  * @param l: the ToolBarListener to be removed
+  */
+  public void removeListener(ExitListener l)
+  {
+    listeners.remove(l);
+  }
+
+  //Notifies all interested listeners
+  private void notifyListeners()
+  {
+    for (ExitListener l : listeners) {
+      if(exitRequested){
+        exitRequested = false;
+        l.exit();
+      }
+    }
   }
 
 }
