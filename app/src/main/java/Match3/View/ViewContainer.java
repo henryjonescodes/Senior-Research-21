@@ -15,27 +15,43 @@ public class ViewContainer implements MainMenuListener, ExitListener{
   private JFrame frame;
   private MainMenu menu;
   private BoardMakerContainer levelEditor;
+  private Match3Container match3;
+  private boolean showingEditor, showingGame;
+
 
   public ViewContainer(){
-
+    showingEditor = false;
+    showingGame = false;
   }
 
   public void makeBoardMaker(){
+    showingEditor = true;
     frame.remove(menu);
     levelEditor = new BoardMakerContainer();
-    levelEditor.getDisplay().addListener(this);
+    levelEditor.addListener(this);
 
     frame.add(levelEditor);
     frame.setSize(500,700);
   }
   public void makeMatch3(){
-
+    showingGame = true;
+    frame.remove(menu);
+    match3 = new Match3Container();
+    match3.addListener(this);
+    frame.add(match3);
+    frame.setSize(500,500);
   }
 
   public void exit(){
-    frame.remove(levelEditor);
+    if(showingGame){
+      frame.remove(match3);
+      showingGame = false;
+    } else if (showingEditor){
+      frame.remove(levelEditor);
+      showingEditor = false;
+    }
     frame.add(menu);
-    frame.setSize(200,75);
+    frame.setSize(250,75);
   }
 
   public void go(){
@@ -46,7 +62,7 @@ public class ViewContainer implements MainMenuListener, ExitListener{
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.add(menu);
     frame.pack();
-    frame.setSize(200,75);
+    frame.setSize(250,75);
 
     // frame.setSize(500,700);
 

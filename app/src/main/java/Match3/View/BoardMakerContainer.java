@@ -25,6 +25,9 @@ public class BoardMakerContainer extends JPanel implements ActionListener, TreeS
   private JFileChooser fileChooser;
   private GameIO io_manager;
 
+  private Vector<ExitListener> listeners;
+  private boolean exitRequested = false;
+
 
 
 
@@ -32,6 +35,8 @@ public class BoardMakerContainer extends JPanel implements ActionListener, TreeS
   * BoardMakerContainer constructor
   */
  public BoardMakerContainer(){
+    listeners = new Vector<ExitListener>();
+
     //Layout the container
     layout = new BorderLayout();
     fileChooser = new JFileChooser();
@@ -163,17 +168,22 @@ public class BoardMakerContainer extends JPanel implements ActionListener, TreeS
 
   public JToolBar makeToolbar(){
     JToolBar toolBar = new JToolBar();
-    JButton Save, Load;
+    JButton Save, Load, exit;
     Save = new JButton("Save");
     Load = new JButton("Load");
+    exit = new JButton("Exit");
+
 
     Save.addActionListener(this);
     Load.addActionListener(this);
+    exit.addActionListener(this);
+
 
     toolBar.addSeparator(new Dimension(30,10));
     toolBar.add(Save);
     toolBar.add(Load);
     toolBar.addSeparator(new Dimension(30,10));
+    toolBar.add(exit);
 
     toolBar.setFloatable(false);
 
@@ -205,9 +215,40 @@ public class BoardMakerContainer extends JPanel implements ActionListener, TreeS
                 loadFromImported(importedTree);
                 break;
               }
+          case "Exit":
+              exitRequested = true;
+              notifyListeners();
+              break;
           default:
               break;
       }
+  }
+
+  public void addListener(ExitListener l)
+  {
+    if (! listeners.contains(l)) {
+        listeners.add(l);
+    }
+  }
+
+  /**
+  * removes the specified ToolBarListener
+  * @param l: the ToolBarListener to be removed
+  */
+  public void removeListener(ExitListener l)
+  {
+    listeners.remove(l);
+  }
+
+  //Notifies all interested listeners
+  private void notifyListeners()
+  {
+    for (ExitListener l : listeners) {
+      if(exitRequested){
+        exitRequested = false;
+        l.exit();
+      }
+    }
   }
 
 

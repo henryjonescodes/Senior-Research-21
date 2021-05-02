@@ -118,6 +118,16 @@ public class BoardState implements Serializable
     notifyListeners();
   }
 
+  public int getMoveNum(){
+    int count = 1;
+    for(int i = 0; i < name.length(); i++){
+      if(name.charAt(i) == '.'){
+        count ++;
+      }
+    }
+    return count;
+  }
+
   private void go(){
     listeners = new Vector<BoardStateListener>();
     cascades = new Vector<BoardState>();

@@ -134,6 +134,24 @@ public class DecisionTree implements Serializable
     return total;
   }
 
+  public int getNumRows(){
+    return NUM_ROWS;
+  }
+
+  public int getNumCols(){
+    return NUM_COLS;
+  }
+
+  public BoardState searchInMove(int move, String name){
+    BoardState temp = new BoardState(7,7,name,0,0);
+    for(BoardState bs : gameStates.get(move)){
+      if(bs.getName().equals(name)){
+        temp = bs;
+      }
+    }
+    return temp;
+  }
+
   public String[] stateNames(){
     String[] names = new String[numStates()];
     int index = 0;
