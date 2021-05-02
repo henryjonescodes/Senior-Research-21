@@ -39,7 +39,7 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
 
     //Initialize objects
     bm = new BoardMaker();
-    dt = new DecisionTree(5);
+    dt = new DecisionTree(4);
     dt.generateBlankTree();
     dtv = new DecisionTreeView(dt);
     bm.updateState(dt.getInitialState(), 0);
@@ -123,7 +123,7 @@ public class ViewContainer extends JPanel implements ActionListener, TreeSelecti
 
     this.add(bm,BorderLayout.PAGE_START);
     this.add(scroller,BorderLayout.CENTER);
-    System.out.println(dt.getGameStates().get(1).elementAt(0).toString());
+    // System.out.println(dt.getGameStates().get(1).elementAt(0).toString());
     update();
     }
 

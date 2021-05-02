@@ -36,7 +36,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   public static final boolean PRINT_ALL_BOARDS = true;
 
   private JButton addCascade, removeCascade, next, prev, agent0, agent1, highlight;
-  private JButton scoreUp, scoreDown, notiUp, notiDown;
+  private JButton scoreUp, scoreDown, notiUp, notiDown, dropPieces;
   private JToolBar toolBar, scoreBar;
 
   private boolean agentA_select, agentB_select, highlight_select, selecting;
@@ -64,6 +64,10 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     displayedCascade = 0;
     displayedBoard = new BoardState(numRows,numCols, "unnamed",0,0);
     displayedBoard.addListener(this);
+
+    // displayedBoard.updateAgentSelection(0, new int[]{-1,-1,-1,-1});
+    // displayedBoard.updateAgentSelection(1, new int[]{-1,-1,-1,-1});
+    // displayedBoard.updateAgentSelection(2, new int[]{-1,-1,-1,-1});
     go(numRows, numCols);
   }
 
@@ -74,6 +78,10 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     displayedCascade = 0;
     displayedBoard = board;
     displayedBoard.addListener(this);
+
+    // displayedBoard.updateAgentSelection(0, new int[]{-1,-1,-1,-1});
+    // displayedBoard.updateAgentSelection(1, new int[]{-1,-1,-1,-1});
+    // displayedBoard.updateAgentSelection(2, new int[]{-1,-1,-1,-1});
     go(numRows, numCols);
   }
 
@@ -84,6 +92,10 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     displayedCascade = 0;
     displayedBoard = new BoardState(this.numRows,this.numCols,"unnamed",0,0);
     displayedBoard.addListener(this);
+
+    // displayedBoard.updateAgentSelection(0, new int[]{-1,-1,-1,-1});
+    // displayedBoard.updateAgentSelection(1, new int[]{-1,-1,-1,-1});
+    // displayedBoard.updateAgentSelection(2, new int[]{-1,-1,-1,-1});
     go(this.numRows, this.numCols);
   }
 
@@ -142,9 +154,11 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
         }
     }
 
-    displayedBoard.updateAgentSelection(0, new int[]{-1,-1,-1,-1});
-    displayedBoard.updateAgentSelection(1, new int[]{-1,-1,-1,-1});
-    displayedBoard.updateAgentSelection(2, new int[]{-1,-1,-1,-1});
+    // displayedBoard.updateAgentSelection(0, new int[]{-1,-1,-1,-1});
+    // displayedBoard.updateAgentSelection(1, new int[]{-1,-1,-1,-1});
+    // displayedBoard.updateAgentSelection(2, new int[]{-1,-1,-1,-1});
+
+
     this.add(makeToolbar(),BorderLayout.PAGE_START);
     this.add(boardPanel,BorderLayout.CENTER);
     this.add(makeScoreBar(),BorderLayout.PAGE_END);
@@ -155,11 +169,13 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
   public JToolBar makeScoreBar(){
     scoreBar = new JToolBar();
+    dropPieces = new JButton("Drop Pieces");
     scoreUp = new JButton("Score +");
     scoreDown = new JButton("Score -");
     notiUp = new JButton("Noti +");
     notiDown = new JButton("Noti -");
 
+    dropPieces.addActionListener(this);
     scoreUp.addActionListener(this);
     scoreDown.addActionListener(this);
     notiUp.addActionListener(this);
@@ -174,6 +190,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     scoreBar.add(notificationLabel);
     scoreBar.add(notiDown);
     scoreBar.addSeparator(new Dimension(10,10));
+    scoreBar.add(dropPieces);
 
     scoreBar.setFloatable(false);
 
@@ -310,6 +327,9 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
           case "Score -":
               displayedBoard.setScore(Math.max((displayedBoard.getScore() - 1), 0));
               break;
+          case "Drop Pieces":
+              dropPieces();
+              break;
           default: // board piece
               String[] cmd = e.getActionCommand().split(" ");
               int cmdrow = Integer.parseInt(cmd[0]);
@@ -365,8 +385,12 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
   public void update(){
     scoreLabel.setText(String.valueOf(displayedBoard.getScore()));
     notificationLabel.setText(String.valueOf(displayedBoard.getNotification()));
-
-    // printSelection(selection);
+    // System.out.print("AgentA: ");
+    // printSelection(displayedBoard.getAgentSelection(0));
+    // System.out.print("AgentB: ");
+    // printSelection(displayedBoard.getAgentSelection(1));
+    // System.out.print("HighLight: ");
+    // printSelection(displayedBoard.getAgentSelection(2));
     for(int i=0; i<numRows; i++) {
         for(int j=0; j<numCols; j++) {
             int value = displayedBoard.getValueAt(i,j);
@@ -394,6 +418,48 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
     }
   }
 
+
+    // let all pieces fall to the bottom under gravity, then let in
+    // new ones from the top drawn randomly
+    public void dropPieces() {
+        // work column by column
+        for(int j=0; j<numCols; j++) {
+
+            // Make temporary storage for moved pieces
+            // and fill it with empty values
+            int[] thiscol = new int[numRows];
+            for(int i=0;i<numRows;i++) {
+                thiscol[i] = CELL_EMPTY;
+            }
+
+            // Starting at the top of each collumn, store eveything
+            // but the empty cells in new order
+            int target_index = numRows - 1;
+            for(int i=numRows-1; i>=0; i--) {
+                if(displayedBoard.getValueAt(i,j) != CELL_EMPTY) {
+                    thiscol[target_index] = displayedBoard.getValueAt(i,j);
+                    target_index--;
+                }
+            }
+
+            // // If target_index hasn't fully traversed the collumn,
+            // // add new randomized pieces at the top
+            // while(target_index >= 0) {
+            //     thiscol[target_index] = future.getNextPiece(j);
+            //     // future.dropPieces();
+            //     // future.fillRandomRows();
+            //     // if(PRINT_ALL_BOARDS) {System.out.println("Future \n" + future);}
+            //     // thiscol[target_index] = new Random().nextInt(CELL_MAX)+1;
+            //     target_index--;
+            // }
+
+            // Transfer data to the board's data structure
+            for(int i=0;i<numRows;i++) {
+                displayedBoard.setValueAt(i,j,thiscol[i]);
+            }
+        }
+        // if(PRINT_ALL_BOARDS) {System.out.println("Up Next \n" + future);}
+    }
 
   /**
   * gets the size of the layout

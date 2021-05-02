@@ -34,7 +34,7 @@ public class DecisionTree implements Serializable
 
 
   public DecisionTree(int numMoves){
-    System.out.println("Constructor");
+    // System.out.println("Constructor");
     this.numMoves = numMoves;
   }
 
@@ -104,12 +104,12 @@ public class DecisionTree implements Serializable
   public void importFromMap(Map<Integer, Vector<BoardState>> states, Map<Integer, Vector<String>> names){
     gameStates = states;
     stateNames = names;
-    for(int move: names.keySet()){
-      System.out.println("Move: " + move);
-      for(int i = 0; i < names.get(move).size(); i++){
-        System.out.println(names.get(move).elementAt(i));
-      }
-    }
+    // for(int move: names.keySet()){
+    //   System.out.println("Move: " + move);
+    //   for(int i = 0; i < names.get(move).size(); i++){
+    //     System.out.println(names.get(move).elementAt(i));
+    //   }
+    // }
 
     // generateBlankTree();
   }

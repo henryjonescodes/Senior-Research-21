@@ -23,9 +23,14 @@ public class BoardState implements Serializable
   private int notification = 0;
   private int[][] board;
   private String name;
-  private int[] agentA = new int[4];
-  private int[] agentB = new int[4];;
-  private int[] highLight = new int[4];;
+  // private int[] agentA = new int[4];
+  // private int[] agentB = new int[4];
+  // private int[] highLight = new int[4];
+
+  private int[] agentA = new int[]{-1,-1,-1,-1};
+  private int[] agentB = new int[]{-1,-1,-1,-1};
+  private int[] highLight = new int[]{-1,-1,-1,-1};
+
 
   private Vector<BoardState> cascades;
 
@@ -142,6 +147,21 @@ public class BoardState implements Serializable
       return numcols;
   }
 
+  public int[] getAgentSelection(int agentID){
+    if(agentID == 0){
+      // System.out.println("Setting A");
+      return agentA;
+    } else if(agentID == 1){
+      // System.out.println("Setting B");
+      return agentB;
+    } else if(agentID == 2){
+      // System.out.println("Setting Highlight");
+      return highLight;
+    } else {
+      return null;
+    }
+  }
+
   public boolean updateAgentSelection(int agentID, int[] position){
     // printSelection(position);
     if(agentID != 0 && agentID != 1 && agentID != 2){
@@ -152,29 +172,31 @@ public class BoardState implements Serializable
       System.out.println("Position Invalid");
       return false;
     }
-    System.out.println("Updating Agent: " + agentID);
+    // System.out.println("Updating Agent: " + agentID);
     if(agentID == 0){
-      System.out.println("Setting A");
+      // System.out.println("Setting A");
       agentA = position.clone();
     } else if(agentID == 1){
-      System.out.println("Setting B");
+      // System.out.println("Setting B");
       agentB = position.clone();
     } else if(agentID == 2){
-      System.out.println("Setting Highlight");
+      // System.out.println("Setting Highlight");
       highLight = position.clone();
     }
-    printSelection(position);
+    // printSelection(position);
     notifyListeners();
     return true;
   }
 
   public int isHighlighted(int row, int col){
     if(searchInSelection(row, col, agentA)){
-      // System.out.println("returning 0");
+      // System.out.println("(" +   row + ", " + col + ") highLight 0");
       return 0;
     } else if(searchInSelection(row, col, agentB)){
+      // System.out.println("(" + row + ", " + col + ") highLight 1");
       return 1;
     } else if(searchInSelection(row, col, highLight)){
+      // System.out.println("(" + row + ", " + col + ") highLight 2");
       return 2;
     } else {
       return -1;
@@ -278,7 +300,7 @@ public class BoardState implements Serializable
     SB.append(IO_Format.SCORE_HEADER + "\n");
     SB.append(score + "\n");
     SB.append(IO_Format.NOTIFICATION_HEADER + "\n");
-    SB.append(score + "\n");
+    SB.append(notification + "\n");
     SB.append(IO_Format.CONTENT_HEADER + "\n");
 
     // for(int i = 0; i < numrows; i++){

@@ -15,8 +15,10 @@ public class DecisionTreeView extends JPanel implements ActionListener
 {
 
   private static final int TREE_SPACING_Y = 40;
-  private static final int TREE_SPACING_X = 15;
-  private static final Dimension BUTTON_SIZE = new Dimension(70, 40);
+  private static final int TREE_SPACING_X = 1;
+  private static final int BUTTON_WIDTH = 70;
+  private static final int BUTTON_HEIGHT = 40;
+  private static final Dimension BUTTON_SIZE = new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT);
 
   private final Color DESELECTED_COLOR = Color.BLACK;
   private final Color SELECTED_COLOR = Color.RED;
@@ -97,7 +99,7 @@ public class DecisionTreeView extends JPanel implements ActionListener
                      TREE_SPACING_Y,
                      SpringLayout.NORTH, this);
               layout.putConstraint(SpringLayout.WEST, buttonVec.elementAt(0),
-                    TREE_SPACING_X,
+                    (TREE_SPACING_X + BUTTON_WIDTH * (stateNames.get(numMoves).size()/2 - stateNames.get(move).size()/2)),
                     SpringLayout.WEST, this);
               copyBtn = new JButton("Copy");
               // copyBtn.setActionCommand("Copy");
@@ -110,6 +112,9 @@ public class DecisionTreeView extends JPanel implements ActionListener
               layout.putConstraint(SpringLayout.WEST, copyBtn,
                     TREE_SPACING_X,
                     SpringLayout.EAST, buttonVec.elementAt(0));
+              layout.putConstraint(SpringLayout.EAST, copyBtn,
+                    TREE_SPACING_X,
+                    SpringLayout.EAST, this);
           } else {
             for(int i = 0; i < buttonVec.size(); i++){
               JButton thisBtn = buttonVec.elementAt(i);
@@ -117,7 +122,7 @@ public class DecisionTreeView extends JPanel implements ActionListener
               if(i == 0){
                 //Attatch this one to the WEST side of the panel
                 layout.putConstraint(SpringLayout.WEST, thisBtn,
-                       TREE_SPACING_X,
+                       (TREE_SPACING_X + BUTTON_WIDTH * (stateNames.get(numMoves).size()/2 - stateNames.get(move).size()/2)),
                        SpringLayout.WEST, this);
               } else if(i != buttonVec.size() - 1) {
                 //Attatch this one to its neighbors
@@ -126,9 +131,12 @@ public class DecisionTreeView extends JPanel implements ActionListener
                        SpringLayout.EAST, buttonVec.elementAt(i-1));
               } else {
                 //Attatch this one to the EAST side of the panel
-                layout.putConstraint(SpringLayout.WEST, thisBtn,
+                // layout.putConstraint(SpringLayout.WEST, thisBtn,
+                //         (TREE_SPACING_X + BUTTON_WIDTH * (stateNames.get(numMoves).size()/2 - stateNames.get(move).size()/2)),
+                //        SpringLayout.EAST, buttonVec.elementAt(i-1));
+               layout.putConstraint(SpringLayout.WEST, thisBtn,
                        TREE_SPACING_X,
-                       SpringLayout.EAST, buttonVec.elementAt(i-1));
+                      SpringLayout.EAST, buttonVec.elementAt(i-1));
                 // layout.putConstraint(SpringLayout.EAST, thisBtn,
                 //        TREE_SPACING_X,
                 //        SpringLayout.EAST, this);
