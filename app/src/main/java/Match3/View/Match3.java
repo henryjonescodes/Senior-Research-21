@@ -35,9 +35,12 @@ public class Match3 extends JPanel implements ActionListener, BoardStateListener
   private JPanel boardPanel;
   private Timer timer;
 
-  private int displayedCascade;
+  private int displayedCascade, agentChoice;
+  private Vector<GameListener> listeners;
 
   public Match3(DecisionTree dt){
+    listeners = new Vector<GameListener>();
+
     timer = new Timer(SPEED, cascadeListener);
     timer.setInitialDelay(PAUSE);
     timer.start();
@@ -49,6 +52,7 @@ public class Match3 extends JPanel implements ActionListener, BoardStateListener
     displayedBoard = rootBoard;
     displayedBoard.addListener(this);
     displayedCascade = 0;
+    agentChoice = 0;
     generateButtons(numRows,numCols);
   }
 
@@ -129,9 +133,11 @@ public class Match3 extends JPanel implements ActionListener, BoardStateListener
     if(highlightValue == 0){
       System.out.println("Agent 0");
       getNextBoard(1);
+      agentChoice = 1;
     } else if (highlightValue == 1){
       System.out.println("Agent 1");
       getNextBoard(0);
+      agentChoice = 0;
     }
   }
   //0 = agent 0
@@ -149,49 +155,12 @@ public class Match3 extends JPanel implements ActionListener, BoardStateListener
     }
   }
 
-  // public void updateState(BoardState board,int cascade){
-  //   System.out.println("trying to display " + displayedBoard.getName() + " Cascade: " + cascade);
-  //
-  //   rootBoard = board;
-  //   System.out.println("NumCascades: " + rootBoard.numCascades());
-  //   System.out.println("displayedCascade: " + displayedCascade);
-  //
-  //   // displayedCascade = cascade;
-  //
-  //   if(cascade <= displayedBoard.numCascades() && cascade >= 1){
-  //     System.out.println("true");
-  //     rootBoard = board;
-  //     displayedCascade = cascade;
-  //     displayedBoard = rootBoard.getCascade(displayedCascade-1);
-  //   } else {
-  //     System.out.println("false");
-  //     displayedBoard = board;
-  //   }
-  //   System.out.println("trying to display " + displayedBoard.getName());
-  //
-  //
-  //   // if(displayedCascade <= displayedBoard.numCascades() && displayedCascade >= 1){
-  //   //   displayedBoard = board.getCascade(displayedCascade-1);
-  //   //   System.out.println("trying to display " + displayedBoard.getName());
-  //   // } else {
-  //   //   displayedBoard = board;
-  //   //   System.out.println("trying to display " + displayedBoard.getName());
-  //   // }
-  //
-  //   // nameLabel.setText(displayedBoard.getName());
-  //   numRows = displayedBoard.getNumRows();
-  //   numCols = displayedBoard.getNumCols();
-  //   // numCascades = displayedBoard.numCascades();
-  //   displayedBoard.addListener(this);
-  //   update();
-  // }
-
   public void updateState(BoardState board, int cascade){
     rootBoard = board;
     displayedCascade = cascade;
     int numCascades = rootBoard.numCascades();
 
-    System.out.println("displayedCascade: " + displayedCascade);
+    // System.out.println("displayedCascade: " + displayedCascade);
 
     if(displayedCascade == 0){
       displayedBoard = board;
@@ -199,14 +168,38 @@ public class Match3 extends JPanel implements ActionListener, BoardStateListener
       displayedBoard = rootBoard.getCascade(displayedCascade-1);
     }
 
-    System.out.println("trying to display " + displayedBoard.getName());
+    // System.out.println("trying to display " + displayedBoard.getName());
 
 
     // numRows = displayedBoard.getNumRows();
     // numCols = displayedBoard.getNumCols();
     // numCascades = displayedBoard.numCascades();
     displayedBoard.addListener(this);
+    notifyListeners();
     update();
+  }
+
+  public void addListener(GameListener l)
+  {
+    if (! listeners.contains(l)) {
+        listeners.add(l);
+    }
+  }
+
+
+  public void removeListener(GameListener l)
+  {
+    listeners.remove(l);
+  }
+
+  //Notifies all interested listeners
+  private void notifyListeners()
+  {
+    for (GameListener l : listeners) {
+      l.setScore(displayedBoard.getScore());
+      l.setNotification(displayedBoard.getNotification());
+      l.setChoice(agentChoice);
+    }
   }
 
   ActionListener cascadeListener = new ActionListener() {

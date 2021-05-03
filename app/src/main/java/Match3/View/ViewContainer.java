@@ -39,7 +39,7 @@ public class ViewContainer implements MainMenuListener, ExitListener{
     match3 = new Match3Container();
     match3.addListener(this);
     frame.add(match3);
-    frame.setSize(500,500);
+    frame.setSize(500,600);
   }
 
   public void exit(){

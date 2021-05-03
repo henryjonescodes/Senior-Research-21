@@ -15,6 +15,7 @@ public class Match3Container extends JPanel implements ActionListener{
 
   private JFileChooser fileChooser;
   private Match3 match3;
+  private ScoreBoard sb;
   private JButton loadBtn;
   private BorderLayout layout;
   private Vector<ExitListener> listeners;
@@ -72,6 +73,9 @@ public class Match3Container extends JPanel implements ActionListener{
   private void loadFromImported(DecisionTree imported){
     this.remove(loadBtn);
     match3 = new Match3(imported);
+    sb = new ScoreBoard();
+    match3.addListener(sb);
+    this.add(sb,BorderLayout.PAGE_START);
     this.add(match3,BorderLayout.CENTER);
     // layout.layoutContainer(this);
 
