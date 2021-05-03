@@ -10,8 +10,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
-public class Match3Container extends JPanel implements ActionListener{
+public class Match3Container extends JPanel implements ActionListener, GameOverListener{
 
   private JFileChooser fileChooser;
   private Match3 match3;
@@ -21,6 +23,7 @@ public class Match3Container extends JPanel implements ActionListener{
   private Vector<ExitListener> listeners;
   private boolean exitRequested = false;
   private GameIO io_manager;
+  private Logger logger;
 
 
   public Match3Container(){
@@ -30,6 +33,14 @@ public class Match3Container extends JPanel implements ActionListener{
     layout = new BorderLayout();
     loadBtn = new JButton("Load");
     loadBtn.addActionListener(this);
+    try {
+        BufferedImage myPicture = ImageIO.read(new File("src/main/java/Match3/Icons/icon1.png"));
+        Image scaled = myPicture.getScaledInstance(100,100,Image.SCALE_SMOOTH);
+        ImageIcon testIcon = new ImageIcon(scaled);
+        loadBtn.setIcon(testIcon);
+    } catch (Exception ex) {
+       System.out.println(ex);
+    }
     this.setLayout(layout);
 
     this.add(loadBtn, BorderLayout.PAGE_START);
@@ -40,7 +51,7 @@ public class Match3Container extends JPanel implements ActionListener{
     layout.layoutContainer(this);
   }
 
-  public File getSaveLocation(){
+  public File getSaveLocation(String extension){
     fileChooser.addChoosableFileFilter(new IO_Filter());
     fileChooser.setDialogTitle("Specify a filename and path");
     int userSelection = fileChooser.showSaveDialog(this);
@@ -50,7 +61,7 @@ public class Match3Container extends JPanel implements ActionListener{
       fileToSave = fileChooser.getSelectedFile();
     }
 
-    File renamedFile = new File(fileToSave.getAbsolutePath() + ".txt");
+    File renamedFile = new File(fileToSave.getAbsolutePath() + extension);
 
     // System.out.println("Save as file: " + fileToSave.getAbsolutePath());
     return renamedFile;
@@ -75,6 +86,7 @@ public class Match3Container extends JPanel implements ActionListener{
     match3 = new Match3(imported);
     sb = new ScoreBoard();
     match3.addListener(sb);
+    match3.addListener(this);
     this.add(sb,BorderLayout.PAGE_START);
     this.add(match3,BorderLayout.CENTER);
     // layout.layoutContainer(this);
@@ -127,6 +139,45 @@ public class Match3Container extends JPanel implements ActionListener{
       }
   }
 
+  public void gameOver(int score, Logger log){
+    logger = log;
+    JLabel message = new JLabel("GAME OVER");
+    String scoreString = "Points: " + String.valueOf(score);
+    JLabel scoreMessage = new JLabel(scoreString);
+    JPanel gameOverPanel = new JPanel();
+    // gameOverPanel.setLayout(new BorderLayout());
+    gameOverPanel.setLayout(new BoxLayout(gameOverPanel, BoxLayout.Y_AXIS));
+    message.setAlignmentX(Component.CENTER_ALIGNMENT);
+    scoreMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    message.setFont(new Font("Verdana", Font.PLAIN, 40));
+    scoreMessage.setFont(new Font("Verdana", Font.PLAIN, 40));
+
+    gameOverPanel.add(message);
+    gameOverPanel.add(scoreMessage);
+
+    // gameOverPanel.add(message, BorderLayout.PAGE_START);
+    // gameOverPanel.add(scoreMessage, BorderLayout.PAGE_END);
+    match3.removeListener(this);
+    this.remove(match3);
+    this.remove(sb);
+    this.add(gameOverPanel, BorderLayout.CENTER);
+
+    update();
+    logStuff();
+
+    // match3 = null;
+    // sb = null;
+  }
+
+  public void logStuff(){
+    File logLocation = getSaveLocation(".csv");
+    try {
+      logger.write(logLocation);
+    } catch (IOException ex){
+      System.out.println("Exception" + ex);
+    }
+  }
 
   //=============================== Listeners ==================================
 
@@ -151,6 +202,9 @@ public class Match3Container extends JPanel implements ActionListener{
   {
     for (ExitListener l : listeners) {
       if(exitRequested){
+        match3.removeListener(this);
+        match3 = null;
+        sb = null;
         exitRequested = false;
         l.exit();
       }

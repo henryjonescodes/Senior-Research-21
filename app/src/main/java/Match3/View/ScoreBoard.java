@@ -4,6 +4,7 @@ package Match3.View;
  */
 import Match3.Listeners.*;
 import Match3.Document.*;
+import Match3.IO.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -18,9 +19,11 @@ public class ScoreBoard extends JPanel implements GameListener{
   private AgentView agent0, agent1;
   private int scoreValue, prevScore, notiValue, thisChoice;
   public ScoreBoard(){
+    IconLoader IL = new IconLoader();
+    ImageIcon[] icons = IL.getAgentImgs();
     score = new JLabel("0");
-    agent0 = new AgentView();
-    agent1 = new AgentView();
+    agent0 = new AgentView(icons[0], Color.red);
+    agent1 = new AgentView(icons[1], Color.blue);
     // this.setLayout(new BorderLayout());
     // this.add(agent0, BorderLayout.LINE_START);
     // this.add(score, BorderLayout.CENTER);
@@ -34,7 +37,6 @@ public class ScoreBoard extends JPanel implements GameListener{
 
   public void setScore(int value){
     prevScore = scoreValue;
-    System.out.println("score");
     scoreValue = value;
     update();
   }
