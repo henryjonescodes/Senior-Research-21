@@ -191,12 +191,12 @@ public class Match3 extends JPanel implements ActionListener, BoardStateListener
   public void handleClick(int row,int col) {
     int highlightValue = displayedBoard.isHighlighted(row,col);
     if(highlightValue == 0){
-      System.out.println("Agent 0");
+      // System.out.println("Agent 0");
       agentChoice = 1;
       timer.restart();
       getNextBoard(1);
     } else if (highlightValue == 1){
-      System.out.println("Agent 1");
+      // System.out.println("Agent 1");
       agentChoice = 0;
       timer.restart();
       getNextBoard(0);
@@ -211,7 +211,7 @@ public class Match3 extends JPanel implements ActionListener, BoardStateListener
       int moveToSearch = rootBoard.getMoveNum()+1;
       String rootName = rootBoard.getName();
       String nameToSearch = rootName + '.' + String.valueOf(agent);
-      System.out.println("Searching for: " + nameToSearch);
+      // System.out.println("Searching for: " + nameToSearch);
       BoardState stateToSwap = dt.searchInMove(moveToSearch,nameToSearch);
       updateState(stateToSwap, 0);
     }
@@ -304,23 +304,23 @@ public class Match3 extends JPanel implements ActionListener, BoardStateListener
         // drawDashedLine(linesPanel.getGraphics(), 10,10,100,100,Color.RED);
   }
 
-  public void drawDashedLine(Graphics g, int x1, int y1, int x2, int y2, Color c){
-
-    // Create a copy of the Graphics instance
-    Graphics2D g2d = (Graphics2D) g.create();
-
-    // Set the stroke of the copy, not the original
-    Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-                                    0, new float[]{9}, 0);
-    g2d.setStroke(dashed);
-    g2d.setColor(c);
-
-    // Draw to the copy
-    g2d.drawLine(x1, y1, x2, y2);
-
-    // Get rid of the copy
-    g2d.dispose();
-  }
+  // public void drawDashedLine(Graphics g, int x1, int y1, int x2, int y2, Color c){
+  //
+  //   // Create a copy of the Graphics instance
+  //   Graphics2D g2d = (Graphics2D) g.create();
+  //
+  //   // Set the stroke of the copy, not the original
+  //   Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+  //                                   0, new float[]{9}, 0);
+  //   g2d.setStroke(dashed);
+  //   g2d.setColor(c);
+  //
+  //   // Draw to the copy
+  //   g2d.drawLine(x1, y1, x2, y2);
+  //
+  //   // Get rid of the copy
+  //   g2d.dispose();
+  // }
 
   ActionListener cascadeListener = new ActionListener() {
     public void actionPerformed(ActionEvent e) {

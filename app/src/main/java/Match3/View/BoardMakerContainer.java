@@ -192,7 +192,7 @@ public class BoardMakerContainer extends JPanel implements ActionListener, TreeS
 
   // handle button presses
   public void actionPerformed(ActionEvent e) {
-      System.out.println(e.getActionCommand());
+      System.out.println("(BoardMakerConatiner)" + e.getActionCommand());
       switch(e.getActionCommand()) {
           case "Save":
               File saveLoc = getSaveLocation();

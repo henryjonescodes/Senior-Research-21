@@ -18,32 +18,60 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
   private JFileChooser fileChooser;
   private Match3 match3;
   private ScoreBoard sb;
-  private JButton loadBtn;
+  private JButton loadBtn,btn1,btn2,btn3,btn4,btn5;
+  private JPanel loadPanel;
   private BorderLayout layout;
   private Vector<ExitListener> listeners;
   private boolean exitRequested = false;
   private GameIO io_manager;
   private Logger logger;
+  private int logCounter;
+  private File logLocation;
+  private boolean gameIsOver;
+  private JPanel gameOverPanel;
 
 
   public Match3Container(){
+    logCounter = 1;
+    gameIsOver = false;
     io_manager = new GameIO();
     listeners = new Vector<ExitListener>();
     fileChooser = new JFileChooser();
     layout = new BorderLayout();
     loadBtn = new JButton("Load");
+    btn1 = new JButton("1");
+    btn2 = new JButton("2");
+    btn3 = new JButton("3");
+    btn4 = new JButton("4");
+    btn5 = new JButton("5");
+    btn1.addActionListener(this);
+    btn2.addActionListener(this);
+    btn3.addActionListener(this);
+    btn4.addActionListener(this);
+    btn5.addActionListener(this);
+
     loadBtn.addActionListener(this);
-    try {
-        BufferedImage myPicture = ImageIO.read(new File("src/main/java/Match3/Icons/icon1.png"));
-        Image scaled = myPicture.getScaledInstance(100,100,Image.SCALE_SMOOTH);
-        ImageIcon testIcon = new ImageIcon(scaled);
-        loadBtn.setIcon(testIcon);
-    } catch (Exception ex) {
-       System.out.println(ex);
-    }
+    loadPanel = new JPanel();
+    loadPanel.setLayout(new FlowLayout());
+    loadPanel.add(loadBtn);
+    loadPanel.add(btn1);
+    loadPanel.add(btn2);
+    loadPanel.add(btn3);
+    loadPanel.add(btn4);
+    loadPanel.add(btn5);
+    logLocation = getSaveLocation("");
+
+    // try {
+    //     BufferedImage myPicture = ImageIO.read(new File("src/main/java/Match3/Icons/icon1.png"));
+    //     Image scaled = myPicture.getScaledInstance(100,100,Image.SCALE_SMOOTH);
+    //     ImageIcon testIcon = new ImageIcon(scaled);
+    //     loadBtn.setIcon(testIcon);
+    // } catch (Exception ex) {
+    //    System.out.println(ex);
+    // }
     this.setLayout(layout);
 
-    this.add(loadBtn, BorderLayout.PAGE_START);
+    this.add(loadPanel, BorderLayout.PAGE_START);
     this.add(makeToolbar(), BorderLayout.PAGE_END);
 
     // this.setPreferredSize(new Dimension(1000,1000));
@@ -82,7 +110,7 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
   }
 
   private void loadFromImported(DecisionTree imported){
-    this.remove(loadBtn);
+    this.remove(loadPanel);
     match3 = new Match3(imported);
     sb = new ScoreBoard();
     match3.addListener(sb);
@@ -106,11 +134,14 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
 
   public JToolBar makeToolbar(){
     JToolBar toolBar = new JToolBar();
-    JButton exit;
+    JButton exit,menu;
+    menu = new JButton("Menu");
     exit = new JButton("Exit");
 
+    menu.addActionListener(this);
     exit.addActionListener(this);
 
+    toolBar.add(menu);
     toolBar.add(exit);
     toolBar.setFloatable(false);
 
@@ -119,23 +150,61 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
 
   // handle button presses
   public void actionPerformed(ActionEvent e) {
-      System.out.println("(Match3)" + e.getActionCommand());
+      System.out.println("(Match3Container)" + e.getActionCommand());
+      File loadLoc;
+      DecisionTree importedTree;
       switch(e.getActionCommand()) {
           case "Exit":
               exitRequested = true;
+              // match3.removeListener(this);
+              // match3 = null;
+              // sb = null;
               notifyListeners();
               break;
+          case "Menu":
+              this.remove(match3);
+              this.remove(sb);
+              if(gameIsOver){
+                this.remove(gameOverPanel);
+              }
+              gameIsOver = false;
+              match3 = null;
+              this.add(loadPanel, BorderLayout.PAGE_START);
+              update();
+              break;
           case "Load":
-              File loadLoc = getImportLocation();
+              loadLoc = getImportLocation();
               if(loadLoc.toString() == ""){
                 break;
               } else {
-                DecisionTree importedTree = io_manager.readFromFile(loadLoc);
+                importedTree = io_manager.readFromFile(loadLoc);
                 loadFromImported(importedTree);
                 break;
               }
+          case "1":
+              loadLoc = new File("src/main/java/Match3/Scenarios/Scenario1.txt");
+              importedTree = io_manager.readFromFile(loadLoc);
+              loadFromImported(importedTree);
+              break;
+          case "2":
+              loadLoc = new File("src/main/java/Match3/Scenarios/Scenario2.txt");
+              importedTree = io_manager.readFromFile(loadLoc);
+              loadFromImported(importedTree);
+              break;
+          case "3":
+              loadLoc = new File("src/main/java/Match3/Scenarios/Scenario3.txt");
+              importedTree = io_manager.readFromFile(loadLoc);
+              loadFromImported(importedTree);
+              break;
+          case "4":
+              loadLoc = new File("src/main/java/Match3/Scenarios/Scenario4.txt");
+              importedTree = io_manager.readFromFile(loadLoc);
+              loadFromImported(importedTree);
+              break;
+          case "5":
+              break;
           default:
-              System.out.println("(Match3)Invalid Command");
+              System.out.println("(Match3Container)Invalid Command");
       }
   }
 
@@ -144,7 +213,7 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
     JLabel message = new JLabel("GAME OVER");
     String scoreString = "Points: " + String.valueOf(score);
     JLabel scoreMessage = new JLabel(scoreString);
-    JPanel gameOverPanel = new JPanel();
+    gameOverPanel = new JPanel();
     // gameOverPanel.setLayout(new BorderLayout());
     gameOverPanel.setLayout(new BoxLayout(gameOverPanel, BoxLayout.Y_AXIS));
     message.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -162,6 +231,7 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
     this.remove(match3);
     this.remove(sb);
     this.add(gameOverPanel, BorderLayout.CENTER);
+    gameIsOver = true;
 
     update();
     logStuff();
@@ -171,7 +241,17 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
   }
 
   public void logStuff(){
-    File logLocation = getSaveLocation(".csv");
+    File renamed = new File(logLocation.getAbsolutePath() + "_" + String.valueOf(logCounter) + ".csv");
+    logCounter += 1;
+    try {
+      logger.write(renamed);
+    } catch (IOException ex){
+      System.out.println("Exception" + ex);
+    }
+  }
+
+  public void logStuffManually(){
+    logLocation = getSaveLocation(".csv");
     try {
       logger.write(logLocation);
     } catch (IOException ex){
@@ -202,9 +282,9 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
   {
     for (ExitListener l : listeners) {
       if(exitRequested){
-        match3.removeListener(this);
-        match3 = null;
-        sb = null;
+        // match3.removeListener(this);
+        // match3 = null;
+        // sb = null;
         exitRequested = false;
         l.exit();
       }

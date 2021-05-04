@@ -15,7 +15,7 @@ public class IO_Filter extends FileFilter {
 
         String extension = Utils.getExtension(f);
         if (extension != null) {
-            if (extension.equals(Utils.txt)) {
+            if (extension.equals(Utils.txt) || extension.equals(Utils.csv)) {
                     return true;
             } else {
                 return false;
@@ -27,6 +27,6 @@ public class IO_Filter extends FileFilter {
 
     //The description of this filter
     public String getDescription() {
-        return "Plain Text Files (.txt)";
+        return "Plain Text Files and CSV files (.txt, .csv)";
     }
 }

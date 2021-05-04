@@ -18,21 +18,45 @@ public class ScoreBoard extends JPanel implements GameListener{
   private JLabel score;
   private AgentView agent0, agent1;
   private int scoreValue, prevScore, notiValue, thisChoice;
+
+  private JButton agent1Button, agent0Button;
+  private JLabel agentText;
+
   public ScoreBoard(){
     IconLoader IL = new IconLoader();
+    JPanel agentPanel = new JPanel();
+    JPanel textPanel = new JPanel();
+    textPanel.setLayout(new FlowLayout());
+    agentPanel.setLayout(new FlowLayout());
     ImageIcon[] icons = IL.getAgentImgs();
     score = new JLabel("0");
-    agent0 = new AgentView(icons[0], Color.red);
-    agent1 = new AgentView(icons[1], Color.blue);
+    agent0Button = new JButton();
+    agent1Button = new JButton();
+    agent0Button.setIcon(icons[0]);
+    agent1Button.setIcon(icons[1]);
+    agent0Button.setOpaque(true);
+    agent1Button.setOpaque(true);
+    agent0Button.setBorderPainted(false);
+    agent1Button.setBorderPainted(false);
+    agentText = new JLabel(" ");
+    agentText.setFont(new Font("Verdana", Font.PLAIN, 20));
+    // agent0 = new AgentView(icons[0], Color.red);
+    // agent1 = new AgentView(icons[1], Color.blue);
     // this.setLayout(new BorderLayout());
     // this.add(agent0, BorderLayout.LINE_START);
     // this.add(score, BorderLayout.CENTER);
     // this.add(agent1, BorderLayout.LINE_END);
 
-    this.setLayout(new FlowLayout());
-    this.add(agent0);
-    this.add(score);
-    this.add(agent1);
+    this.setLayout(new BorderLayout());
+    agentPanel.add(agent0Button);
+    agentPanel.add(score);
+    agentPanel.add(agent1Button);
+    textPanel.add(agentText);
+    this.add(agentPanel,BorderLayout.PAGE_START);
+    this.add(textPanel, BorderLayout.CENTER);
+
+    // this.add(agent0);
+    // this.add(agent1);
   }
 
   public void setScore(int value){
@@ -52,15 +76,27 @@ public class ScoreBoard extends JPanel implements GameListener{
 
   public void update(){
     score.setText(String.valueOf(scoreValue));
-    setAgentText(0, " ");
-    setAgentText(1, " ");
+    agentText.setText(" ");
+    // setAgentText(0, " ");
+    // setAgentText(1, " ");
     if(notiValue == -1){
-      setAgentText(1, MISSED_CASCADE_NOTIFICATION);
+      agentText.setForeground(Color.blue);
+      agentText.setText(MISSED_CASCADE_NOTIFICATION);
+      // setAgentText(1, MISSED_CASCADE_NOTIFICATION);
     } else if (notiValue == 1){
-      setAgentText(0, MISSED_CASCADE_NOTIFICATION);
+      agentText.setForeground(Color.red);
+      agentText.setText(MISSED_CASCADE_NOTIFICATION);
+      // setAgentText(0, MISSED_CASCADE_NOTIFICATION);
     } else if (prevScore != scoreValue){
       String temp = "Good Job! That's " + String.valueOf(scoreValue - prevScore) + " points!";
-      setAgentText(thisChoice,temp);
+      if(thisChoice == 0){
+        agentText.setForeground(Color.red);
+        agentText.setText(temp);
+      } else if (thisChoice == 1){
+        agentText.setForeground(Color.blue);
+        agentText.setText(temp);
+      }
+      // setAgentText(thisChoice,temp);
     }
   }
 

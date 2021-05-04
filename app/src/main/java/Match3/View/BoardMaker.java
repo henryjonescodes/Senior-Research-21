@@ -273,7 +273,7 @@ public class BoardMaker extends JPanel implements ActionListener, BoardStateList
 
   // handle button presses
   public void actionPerformed(ActionEvent e) {
-      System.out.println("Processing Command: " + e.getActionCommand());
+      System.out.println("(BoardMaker)" + e.getActionCommand());
       switch(e.getActionCommand()) {
           case "Add Cascade":
               addCascade();

@@ -155,7 +155,7 @@ public class DecisionTreeView extends JPanel implements ActionListener
 
   // handle button presses
   public void actionPerformed(ActionEvent e) {
-      System.out.println(e.getActionCommand());
+      System.out.println("(DecisisonTreeView)" + e.getActionCommand());
       switch(e.getActionCommand()) {
           case "Copy":
               copyFlag = !copyFlag;
