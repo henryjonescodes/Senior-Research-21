@@ -104,7 +104,7 @@ public class GameIO {
               if(line.equals(IO_Format.TREE_HEADER)){
                 //Advance to the info line
                 line = bufferedReader.readLine();
-                System.out.println(line);
+                // System.out.println(line);
 
                 //Read integers from data line
                 numRows = Character.getNumericValue(line.charAt(0));
@@ -112,7 +112,7 @@ public class GameIO {
                 numMoves = Character.getNumericValue(line.charAt(4));
 
                 //Trace
-                System.out.println("Recovered Rows: " + numRows + " Cols: " + numCols + " Moves: " + numMoves);
+                // System.out.println("Recovered Rows: " + numRows + " Cols: " + numCols + " Moves: " + numMoves);
 
                 //Advance
                 line = bufferedReader.readLine();
@@ -134,7 +134,7 @@ public class GameIO {
 
                 //Trace
                 numNamesAdded += 1;
-                System.out.println("Recovered Name: " + boardName);
+                // System.out.println("Recovered Name: " + boardName);
 
                 //Advance
                 line = bufferedReader.readLine();

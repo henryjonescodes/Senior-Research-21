@@ -12,6 +12,7 @@ public class Utils {
     public final static String tif = "tif";
     public final static String png = "png";
     public final static String txt = "txt";
+    public final static String csv = "csv";
 
     /*
      * Get the extension of a file.
