@@ -30,6 +30,7 @@ public class ScoreBoard extends JPanel implements GameListener{
     agentPanel.setLayout(new FlowLayout());
     ImageIcon[] icons = IL.getAgentImgs();
     score = new JLabel("0");
+    score.setFont(new Font("Verdana", Font.PLAIN, 30));
     agent0Button = new JButton();
     agent1Button = new JButton();
     agent0Button.setIcon(icons[0]);
