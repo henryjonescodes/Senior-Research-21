@@ -21,6 +21,8 @@ public class ScoreBoard extends JPanel implements GameListener{
 
   private JButton agent1Button, agent0Button;
   private JLabel agentText;
+  private ImageIcon[] icons;
+  // private JButton agentText;
 
   public ScoreBoard(){
     IconLoader IL = new IconLoader();
@@ -28,7 +30,7 @@ public class ScoreBoard extends JPanel implements GameListener{
     JPanel textPanel = new JPanel();
     textPanel.setLayout(new FlowLayout());
     agentPanel.setLayout(new FlowLayout());
-    ImageIcon[] icons = IL.getAgentImgs();
+    icons = IL.getAgentImgs();
     score = new JLabel("0");
     score.setFont(new Font("Verdana", Font.PLAIN, 30));
     agent0Button = new JButton();
@@ -40,6 +42,7 @@ public class ScoreBoard extends JPanel implements GameListener{
     agent0Button.setBorderPainted(false);
     agent1Button.setBorderPainted(false);
     agentText = new JLabel(" ");
+    // agentText = new JButton(" ");
     agentText.setFont(new Font("Verdana", Font.PLAIN, 20));
     // agent0 = new AgentView(icons[0], Color.red);
     // agent1 = new AgentView(icons[1], Color.blue);
@@ -78,23 +81,39 @@ public class ScoreBoard extends JPanel implements GameListener{
   public void update(){
     score.setText(String.valueOf(scoreValue));
     agentText.setText(" ");
+    agentText.setOpaque(false);
+    agentText.setBackground(Color.white);
+    agent0Button.setIcon(icons[0]);
+    agent1Button.setIcon(icons[1]);
     // setAgentText(0, " ");
     // setAgentText(1, " ");
     if(notiValue == -1){
+      agent1Button.setIcon(icons[3]);
+      agentText.setOpaque(true);
       agentText.setForeground(Color.blue);
+      agentText.setBackground(new Color(153, 187, 255));
       agentText.setText(MISSED_CASCADE_NOTIFICATION);
       // setAgentText(1, MISSED_CASCADE_NOTIFICATION);
     } else if (notiValue == 1){
+      agent0Button.setIcon(icons[2]);
+      agentText.setOpaque(true);
       agentText.setForeground(Color.red);
+      agentText.setBackground(new Color(255, 161, 181));
       agentText.setText(MISSED_CASCADE_NOTIFICATION);
       // setAgentText(0, MISSED_CASCADE_NOTIFICATION);
     } else if (prevScore != scoreValue){
       String temp = "Good Job! That's " + String.valueOf(scoreValue - prevScore) + " points!";
       if(thisChoice == 0){
+        agent0Button.setIcon(icons[2]);
+        agentText.setOpaque(true);
         agentText.setForeground(Color.red);
+        agentText.setBackground(new Color(255, 161, 181));
         agentText.setText(temp);
       } else if (thisChoice == 1){
+        agent1Button.setIcon(icons[3]);
+        agentText.setOpaque(true);
         agentText.setForeground(Color.blue);
+        agentText.setBackground(new Color(153, 187, 255));
         agentText.setText(temp);
       }
       // setAgentText(thisChoice,temp);

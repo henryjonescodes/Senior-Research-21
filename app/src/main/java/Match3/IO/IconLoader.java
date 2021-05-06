@@ -25,7 +25,10 @@ public class IconLoader{
     try {
       ImageIcon img1 = readSingleIcon("src/main/java/Match3/Icons/agent0.png",AGENT_SIZE);
       ImageIcon img2 = readSingleIcon("src/main/java/Match3/Icons/agent1.png",AGENT_SIZE);
-      icons = new ImageIcon[]{img1,img2};
+      ImageIcon img3 = readSingleIcon("src/main/java/Match3/Icons/agent0Speaks.png",AGENT_SIZE);
+      ImageIcon img4 = readSingleIcon("src/main/java/Match3/Icons/agent1Speaks.png",AGENT_SIZE);
+
+      icons = new ImageIcon[]{img1,img2,img3,img4};
     } catch (Exception ex) {
        System.out.println(ex);
     }
