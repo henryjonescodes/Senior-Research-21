@@ -25,7 +25,7 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
   private boolean exitRequested = false;
   private GameIO io_manager;
   private Logger logger;
-  private int logCounter;
+  private int logCounter, scoreTarget;
   private File logLocation;
   private boolean gameIsOver;
   private JPanel gameOverPanel;
@@ -183,25 +183,33 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
               }
           case "1":
               loadLoc = new File("src/main/java/Match3/Scenarios/Scenario1.txt");
+              scoreTarget = 0;
               importedTree = io_manager.readFromFile(loadLoc);
               loadFromImported(importedTree);
               break;
           case "2":
               loadLoc = new File("src/main/java/Match3/Scenarios/Scenario2.txt");
+              scoreTarget = 12;
               importedTree = io_manager.readFromFile(loadLoc);
               loadFromImported(importedTree);
               break;
           case "3":
               loadLoc = new File("src/main/java/Match3/Scenarios/Scenario3.txt");
+              scoreTarget = 14;
               importedTree = io_manager.readFromFile(loadLoc);
               loadFromImported(importedTree);
               break;
           case "4":
               loadLoc = new File("src/main/java/Match3/Scenarios/Scenario4.txt");
+              scoreTarget = 12;
               importedTree = io_manager.readFromFile(loadLoc);
               loadFromImported(importedTree);
               break;
           case "5":
+              loadLoc = new File("src/main/java/Match3/Scenarios/Scenario5.txt");
+              scoreTarget = 12;
+              importedTree = io_manager.readFromFile(loadLoc);
+              loadFromImported(importedTree);
               break;
           default:
               System.out.println("(Match3Container)Invalid Command");
@@ -210,20 +218,33 @@ public class Match3Container extends JPanel implements ActionListener, GameOverL
 
   public void gameOver(int score, Logger log){
     logger = log;
-    JLabel message = new JLabel("GAME OVER");
     String scoreString = "Points: " + String.valueOf(score);
+    String targetString = "Target: " + String.valueOf(scoreTarget);
+
+    JLabel message = new JLabel("GAME OVER");
+    JLabel scoreTargetMessage = new JLabel(targetString);
     JLabel scoreMessage = new JLabel(scoreString);
+
     gameOverPanel = new JPanel();
-    // gameOverPanel.setLayout(new BorderLayout());
     gameOverPanel.setLayout(new BoxLayout(gameOverPanel, BoxLayout.Y_AXIS));
+
+    scoreTargetMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
     message.setAlignmentX(Component.CENTER_ALIGNMENT);
     scoreMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
 
     message.setFont(new Font("Verdana", Font.PLAIN, 40));
-    scoreMessage.setFont(new Font("Verdana", Font.PLAIN, 40));
+    scoreMessage.setFont(new Font("Verdana", Font.PLAIN, 35));
+    scoreTargetMessage.setFont(new Font("Verdana", Font.PLAIN, 20));
+
+    if(score >= scoreTarget){
+      scoreMessage.setForeground(Color.green);
+    } else {
+      scoreMessage.setForeground(Color.red);
+    }
 
     gameOverPanel.add(message);
     gameOverPanel.add(scoreMessage);
+    gameOverPanel.add(scoreTargetMessage);
 
     // gameOverPanel.add(message, BorderLayout.PAGE_START);
     // gameOverPanel.add(scoreMessage, BorderLayout.PAGE_END);
